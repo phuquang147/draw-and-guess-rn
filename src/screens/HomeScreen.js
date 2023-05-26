@@ -9,22 +9,17 @@ const HomeScreen = () => {
         <Text style={styles.text}>
           Open up App.js to start working on your app!
         </Text>
-        <Text style={styles.text}>
-          Open up App.js to start working on your app!
-        </Text>
-        <Text style={styles.text}>
-          Open up App.js to start working on your app!
-        </Text>
-        {/* <ThemedButton
+
+        <ThemedButton
           name="bruce"
           type="anchor"
           backgroundColor={colors.primary}
           borderColor="black"
           backgroundDarker="black"
-          textFontFamily="Pony"
+          textFontFamily="icielPony"
           raiseLevel={5}>
           <Text style={styles.text}>Bắt đầu</Text>
-        </ThemedButton> */}
+        </ThemedButton>
       </View>
     </SafeAreaView>
   );
@@ -34,12 +29,13 @@ export default HomeScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: '100%',
+    height: '100%',
     backgroundColor: '#ccc',
   },
   text: {
-    fontFamily: 'Pony',
-    fontSize: 50,
+    fontFamily: 'icielPony',
+    fontSize: 30,
     color: '#333',
   },
 });

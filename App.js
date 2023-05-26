@@ -9,30 +9,32 @@ import HomeScreen from './src/screens/HomeScreen';
 const Stack = createNativeStackNavigator();
 
 function App() {
-  <NavigationContainer>
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{headerShown: true}}
-      />
-      <Stack.Screen
-        name="DrawScreen"
-        component={DrawScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="CreateRoomScreen"
-        component={CreateRoomScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="GuessScreen"
-        component={GuessScreen}
-        options={{headerShown: false}}
-      />
-    </Stack.Navigator>
-  </NavigationContainer>;
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{headerShown: true}}
+        />
+        <Stack.Screen
+          name="DrawScreen"
+          component={DrawScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="CreateRoomScreen"
+          component={CreateRoomScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="GuessScreen"
+          component={GuessScreen}
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }
 
 export default App;
