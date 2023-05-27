@@ -5,6 +5,7 @@ import CreateRoomScreen from './src/screens/CreateRoomScreen';
 import DrawScreen from './src/screens/DrawScreen';
 import GuessScreen from './src/screens/GuessScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import LoginScreen from './src/screens/LoginScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,9 +14,14 @@ function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
+          name="LoginScreen"
+          component={LoginScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{headerShown: true}}
+          options={{headerShown: false}}
         />
         <Stack.Screen
           name="DrawScreen"
