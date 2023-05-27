@@ -1,22 +1,20 @@
-import {
-  ImageBackground,
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TextInput,
-} from 'react-native';
+/* eslint-disable react/react-in-jsx-scope */
+import firestore from '@react-native-firebase/firestore';
+import {Picker} from '@react-native-picker/picker';
+import {useEffect, useState} from 'react';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {Picker} from '@react-native-picker/picker';
-
 import colors from '../assets/colors';
-import {useState} from 'react';
+import ChatRoomServices from '../services/chatRoomServices';
 
-const CreateRoomScreen = ({navigation}) => {
+const CreateRoomScreen = ({navigation, route}) => {
   const [selectedNumber, setSelectedNumber] = useState(10);
   const [selectedPoint, setSelectedPoint] = useState(120);
+  const [topics, setTopics] = useState([]);
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const {user} = route.params;
 
   const goBack = () => {
     navigation.navigate('Home');
@@ -24,6 +22,65 @@ const CreateRoomScreen = ({navigation}) => {
 
   const onClose = () => {
     navigation.navigate('Home');
+  };
+
+  useEffect(() => {
+    const getTopics = async () => {
+      const topicsSnapshot = await firestore().collection('topics').get();
+      setTopics(topicsSnapshot.docs.map(topic => topic.data()));
+      setSelectedTopic(0);
+    };
+
+    getTopics();
+  }, []);
+
+  const handleNextTopic = () => {
+    setSelectedTopic(prev => prev + 1);
+  };
+
+  const handlePrevTopic = () => {
+    setSelectedTopic(prev => prev - 1);
+  };
+
+  const handleCreateRoom = async () => {
+    let uuid = null,
+      roomToken = null;
+    try {
+      const {data, status} = await ChatRoomServices.createRoom();
+
+      if (status === 201) {
+        uuid = data.uuid;
+        const res = await ChatRoomServices.generateRoomToken(data.uuid);
+
+        if (res.status === 201) {
+          roomToken = res.data;
+          firestore()
+            .collection('rooms')
+            .add({
+              uuid,
+              roomToken,
+              maxMember: selectedNumber,
+              endPoint: selectedPoint,
+            })
+            .then(room => {
+              room.collection('members').add({
+                isHost: true,
+                isDrawing: false,
+                points: 0,
+                userRef: firestore().collection('users').doc(user.uid),
+              });
+
+              const batch = firestore().batch();
+              for (let word of topics[selectedTopic].words) {
+                batch.set(room.collection('words').doc(), {value: word});
+              }
+              batch.commit();
+            });
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -62,12 +119,19 @@ const CreateRoomScreen = ({navigation}) => {
               textFontFamily="icielPony"
               borderRadius={100}
               width={null}
-              raiseLevel={5}>
+              raiseLevel={5}
+              onPress={handlePrevTopic}
+              disabled={selectedTopic === 0 || selectedTopic === null}>
               <Icon name="arrow-left" size={24} color="black" />
             </ThemedButton>
             <Image
               style={styles.avatar}
-              source={require('../assets/images/splash.png')}
+              source={{
+                uri:
+                  selectedTopic !== null
+                    ? topics[selectedTopic].image
+                    : 'https://firebasestorage.googleapis.com/v0/b/drawandguessgame.appspot.com/o/null.png?alt=media&token=8201b883-5112-41b4-a96e-ccfd79974ff6',
+              }}
             />
             <ThemedButton
               name="bruce"
@@ -77,7 +141,11 @@ const CreateRoomScreen = ({navigation}) => {
               textFontFamily="icielPony"
               borderRadius={100}
               width={null}
-              raiseLevel={5}>
+              raiseLevel={5}
+              onPress={handleNextTopic}
+              disabled={
+                selectedTopic === topics.length - 1 || selectedTopic === null
+              }>
               <Icon name="arrow-right" size={24} color="black" />
             </ThemedButton>
           </View>
@@ -89,14 +157,18 @@ const CreateRoomScreen = ({navigation}) => {
                   setSelectedNumber(itemValue)
                 }
                 style={styles.picker}>
-                <Picker.Item style={{fontSize: 24}} label="5 Người" value={5} />
                 <Picker.Item
-                  style={{fontSize: 24}}
+                  style={styles.pickerItemText}
+                  label="5 Người"
+                  value={5}
+                />
+                <Picker.Item
+                  style={styles.pickerItemText}
                   label="10 Người"
                   value={10}
                 />
                 <Picker.Item
-                  style={{fontSize: 24}}
+                  style={styles.pickerItemText}
                   label="15 Người"
                   value={15}
                 />
@@ -110,22 +182,22 @@ const CreateRoomScreen = ({navigation}) => {
                 }
                 style={styles.picker}>
                 <Picker.Item
-                  style={{fontSize: 24}}
+                  style={styles.pickerItemText}
                   label="100 Điểm"
                   value={100}
                 />
                 <Picker.Item
-                  style={{fontSize: 24}}
+                  style={styles.pickerItemText}
                   label="120 Điểm"
                   value={120}
                 />
                 <Picker.Item
-                  style={{fontSize: 24}}
+                  style={styles.pickerItemText}
                   label="150 Điểm"
                   value={150}
                 />
                 <Picker.Item
-                  style={{fontSize: 24}}
+                  style={styles.pickerItemText}
                   label="180 Điểm"
                   value={180}
                 />
@@ -141,7 +213,8 @@ const CreateRoomScreen = ({navigation}) => {
             backgroundDarker="black"
             textFontFamily="icielPony"
             raiseLevel={5}
-            style={styles.button}>
+            style={styles.button}
+            onPress={handleCreateRoom}>
             <Text style={styles.text}>Tạo phòng</Text>
           </ThemedButton>
           <ThemedButton
@@ -247,5 +320,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     marginVertical: 20,
+  },
+  pickerItemText: {
+    fontSize: 24,
   },
 });

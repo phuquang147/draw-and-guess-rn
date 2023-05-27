@@ -3,39 +3,6 @@ import {useEffect, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 
 const DrawScreen = () => {
-  // const [roomInfo, setRoomInfo] = useState(null);
-
-  // useEffect(() => {
-  //   const createRoom = async () => {
-  //     let uid = null,
-  //       uuid = null,
-  //       roomToken = null;
-  //     try {
-  //       const {data, status} = await ChatRoomServices.createRoom();
-  //       console.log(data);
-
-  //       if (status === 201) {
-  //         uid = '1asasda';
-  //         uuid = data.uuid;
-  //         const res = await ChatRoomServices.generateRoomToken(data.uuid);
-
-  //         if (res.status === 201) {
-  //           roomToken = res.data;
-  //           setRoomInfo({
-  //             uid,
-  //             uuid,
-  //             roomToken,
-  //           });
-  //         }
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-
-  //   createRoom();
-  // }, []);
-  // console.log(roomInfo);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.drawAreaContainer}>
