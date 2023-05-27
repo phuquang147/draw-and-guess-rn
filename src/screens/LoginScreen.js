@@ -1,20 +1,26 @@
-import {
-  ImageBackground,
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TextInput,
-} from 'react-native';
+/* eslint-disable react/react-in-jsx-scope */
+import auth from '@react-native-firebase/auth';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../assets/colors';
 
+GoogleSignin.configure({
+  webClientId:
+    '145827713844-3t89ra9al6holq17g0igjnu28q1qock9.apps.googleusercontent.com',
+});
+
 const LoginScreen = ({navigation}) => {
-  const onCreateRoom = () => {
-    navigation.navigate('Home');
-  };
+  async function onGoogleButtonPress() {
+    await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+    const {idToken} = await GoogleSignin.signIn();
+
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+    return auth().signInWithCredential(googleCredential);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -56,7 +62,11 @@ const LoginScreen = ({navigation}) => {
             style={styles.button}
             paddingHorizontal={5}
             width={null}
-            onPress={() => onCreateRoom()}>
+            onPress={() =>
+              onGoogleButtonPress()
+                .then(() => console.log('Signed in with Google!'))
+                .catch(error => console.log(error))
+            }>
             <Image
               style={styles.googleIcon}
               source={{
