@@ -16,7 +16,6 @@ function App() {
 
   function onAuthStateChanged(user) {
     setUser(user);
-    console.log(user);
     if (initializing) setInitializing(false);
   }
 

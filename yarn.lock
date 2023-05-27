@@ -1791,6 +1791,11 @@
   dependencies:
     "plist" "^3.0.5"
 
+"@react-native-firebase/firestore@^17.5.0":
+  "integrity" "sha512-6pfvp2x28parK3F2CvL6dGketzl8cPspjoE/SsSWem7EhtCluDwCT+qZjPJgJXyEHLhJVtnPHkHOHQGzH3he0Q=="
+  "resolved" "https://registry.npmjs.org/@react-native-firebase/firestore/-/firestore-17.5.0.tgz"
+  "version" "17.5.0"
+
 "@react-native-google-signin/google-signin@^10.0.1":
   "integrity" "sha512-oZoU2lfKyn0s0GqqdFsi4v2FSENrxQYQU9DD/RSkxDdkIQ49Wwo6p5LKlgXY04GwZEVdYMuvZN3G89gQW0ig2g=="
   "resolved" "https://registry.npmjs.org/@react-native-google-signin/google-signin/-/google-signin-10.0.1.tgz"

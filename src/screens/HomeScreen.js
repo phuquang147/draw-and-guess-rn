@@ -9,7 +9,7 @@ import {
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import auth from '@react-native-firebase/auth';
 import colors from '../assets/colors';
 
 const HomeScreen = ({navigation}) => {
@@ -18,7 +18,7 @@ const HomeScreen = ({navigation}) => {
   };
 
   const signOut = () => {
-    navigation.navigate('LoginScreen');
+    auth().signOut();
   };
 
   return (

@@ -6,6 +6,7 @@ import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../assets/colors';
+import firestore from '@react-native-firebase/firestore';
 
 GoogleSignin.configure({
   webClientId:
@@ -15,10 +16,21 @@ GoogleSignin.configure({
 const LoginScreen = ({navigation}) => {
   async function onGoogleButtonPress() {
     await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
-    const {idToken} = await GoogleSignin.signIn();
+    const {idToken, user: signedInUser} = await GoogleSignin.signIn();
 
+    const user = await firestore()
+      .collection('users')
+      .doc(signedInUser.id)
+      .get();
+
+    if (!user.exists) {
+      firestore().collection('users').doc(signedInUser.id).set({
+        name: signedInUser.name,
+        email: signedInUser.email,
+        photo: signedInUser.photo,
+      });
+    }
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
     return auth().signInWithCredential(googleCredential);
   }
 
