@@ -1,15 +1,15 @@
-import {View, Text, Image, StyleSheet} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 
 const Player = ({player}) => {
   return (
     <View style={styles.container}>
-      <Image source={{uri: player.avatar}} style={styles.avatar} />
+      <Image source={{uri: player.photo}} style={styles.avatar} />
       <View style={styles.infor}>
         <Text style={styles.content} numberOfLines={1}>
           {player.name}
         </Text>
         <Text style={styles.content} numberOfLines={1}>
-          {player.score} điểm
+          {player.points} điểm
         </Text>
       </View>
     </View>

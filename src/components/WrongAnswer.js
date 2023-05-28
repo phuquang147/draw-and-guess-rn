@@ -1,12 +1,10 @@
 import {StyleSheet, Text, View} from 'react-native';
-import Icon from 'react-native-vector-icons/Entypo';
 
-const CorrectAnswer = ({answer}) => {
+const WrongAnswer = ({answer}) => {
   return (
     <View style={styles.container}>
-      <Icon name="check" size={18} color="#17a847" />
       <Text style={[styles.text, {fontWeight: 'bold'}]}>
-        {answer.name} <Text style={styles.text}>Chuẩn!</Text>
+        {answer.name} <Text style={styles.text}>{answer.answer}</Text>
       </Text>
     </View>
   );
@@ -21,9 +19,9 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    color: '#17a847',
+    color: '#959ba3',
     fontFamily: 'Open Sans',
   },
 });
 
-export default CorrectAnswer;
+export default WrongAnswer;

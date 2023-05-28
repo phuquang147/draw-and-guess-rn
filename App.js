@@ -55,11 +55,6 @@ function App() {
           options={{headerShown: false}}
         />
         <Stack.Screen
-          name="DrawScreen"
-          component={DrawScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
           name="CreateRoomScreen"
           component={CreateRoomScreen}
           initialParams={{user}}
@@ -68,6 +63,11 @@ function App() {
         <Stack.Screen
           name="GuessScreen"
           component={GuessScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="DrawScreen"
+          component={DrawScreen}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

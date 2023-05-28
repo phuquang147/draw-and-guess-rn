@@ -1,15 +1,8 @@
-import {
-  ImageBackground,
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TextInput,
-} from 'react-native';
+import auth from '@react-native-firebase/auth';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import auth from '@react-native-firebase/auth';
 import colors from '../assets/colors';
 
 const HomeScreen = ({navigation}) => {
@@ -20,6 +13,8 @@ const HomeScreen = ({navigation}) => {
   const signOut = () => {
     auth().signOut();
   };
+
+  const handleJoinRandomRoom = () => {};
 
   return (
     <SafeAreaView style={styles.container}>
@@ -76,7 +71,6 @@ const HomeScreen = ({navigation}) => {
               <Icon name="arrow-right" size={24} color="black" />
             </ThemedButton>
           </View>
-          <TextInput style={styles.input} />
 
           <ThemedButton
             name="bruce"
@@ -146,7 +140,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    marginBottom: 20,
+    marginTop: 16,
   },
   avatarContainer: {
     width: '100%',

@@ -4,6 +4,7 @@ const colors = {
   blue: '#94E7FC',
   red: '#fa5252',
   pink: '#f783ac',
+  grey: '#ccc',
 };
 
 export default colors;

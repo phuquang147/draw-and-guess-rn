@@ -61,20 +61,26 @@ const CreateRoomScreen = ({navigation, route}) => {
               roomToken,
               maxMember: selectedNumber,
               endPoint: selectedPoint,
+              currentWord: null,
+              state: 'waiting', // waiting | playing
             })
             .then(room => {
-              room.collection('members').add({
+              room.collection('members').doc(user.uid).set({
                 isHost: true,
                 isDrawing: false,
                 points: 0,
-                userRef: firestore().collection('users').doc(user.uid),
+                name: user.displayName,
+                uid: user.uid,
+                photo: user.photoURL,
               });
 
               const batch = firestore().batch();
               for (let word of topics[selectedTopic].words) {
                 batch.set(room.collection('words').doc(), {value: word});
               }
-              batch.commit();
+              batch.commit().then(() => {
+                navigation.navigate('GuessScreen', {roomId: room.id, user});
+              });
             });
         }
       }

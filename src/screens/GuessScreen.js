@@ -1,162 +1,186 @@
-import {View, StyleSheet, FlatList, TextInput} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+/* eslint-disable react/react-in-jsx-scope */
+import {FastRoom, WhiteboardView} from '@netless/react-native-fastboard';
+import firestore from '@react-native-firebase/firestore';
+import {useEffect, useState} from 'react';
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import * as Progress from 'react-native-progress';
+import {ThemedButton} from 'react-native-really-awesome-button';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import Feathericon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import Feathericon from 'react-native-vector-icons/Feather';
-import Player from '../components/Player'
-import CorrectAnswer from '../components/CorrectAnswer';
-import AlmostCorrectAnswer from '../components/AlmostCorrectAnswer';
+import colors from '../assets/colors';
 import Answer from '../components/Answer';
-import { useState } from 'react';
+import Player from '../components/Player';
 
-const playerData = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    name: 'Quangu',
-    score: 2,
-    avatar: 'https://www.w3schools.com/w3images/avatar6.png',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    name: 'Tứn Cùi',
-    score: 5,
-    avatar: 'https://www.w3schools.com/w3images/avatar2.png',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    name: 'Em Nghĩa vjp pro',
-    score: 16,
-    avatar:
-      'https://static.wikia.nocookie.net/tdsfanmade/images/e/e6/GigaChad.jpg/revision/latest?cb=20220504152300',
-  },
-];
+const renderDrawArea = (user, room, members) => {
+  const handleStartPlaying = async () => {};
 
-const chatData = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28b',
-    playerName: 'Quangu',
-    answer: 'Báo đốm',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f6',
-    playerName: 'Tứn Cùi',
-    answer: 'Báo đen',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d7',
-    playerName: 'Em Nghĩa vjp pro',
-    answer: 'Báo đời',
-  },
-  {
-    id: 'bd7acbe-c1b1-46c2-aed5-3ad53abb28b',
-    playerName: 'Quangu',
-    answer: 'Báo đốm',
-  },
-  {
-    id: '3ac68af-c605-48d3-a4f8-fbd91aa97f6',
-    playerName: 'Tứn Cùi',
-    answer: 'Báo đen',
-  },
-  {
-    id: '58694a0-3da1-471f-bd96-145571e29d7',
-    playerName: 'Em Nghĩa vjp pro',
-    answer: 'Báo đời',
-  },
-  {
-    id: 'bd7acea-c1b1-46c2-aed5-3ad53abb28b',
-    playerName: 'Quangu',
-    answer: 'Báo đốm',
-  },
-  {
-    id: '3ac68fc-c605-48d3-a4f8-fbd91aa97f6',
-    playerName: 'Tứn Cùi',
-    answer: 'Báo đen',
-  },
-  {
-    id: '586940f-3da1-471f-bd96-145571e29d7',
-    playerName: 'Em Nghĩa vjp pro',
-    answer: 'Báo đời',
-  },
-  {
-    id: 'bd7abea-c1b1-46c2-aed5-3ad53abb28b',
-    playerName: 'Quangu',
-    answer: 'Báo đốm',
-  },
-  {
-    id: '3ac6afc-c605-48d3-a4f8-fbd91aa97f6',
-    playerName: 'Tứn Cùi',
-    answer: 'Báo đen',
-  },
-  {
-    id: '5869a0f-3da1-471f-bd96-145571e29d7',
-    playerName: 'Em Nghĩa vjp pro',
-    answer: 'Báo đời',
-  },
-  {
-    id: 'bd7cbea-c1b1-46c2-aed5-3ad53abb28b',
-    playerName: 'Quangu',
-    answer: 'Báo đốm',
-  },
-  {
-    id: '3ac8afc-c605-48d3-a4f8-fbd91aa97f6',
-    playerName: 'Tứn Cùi',
-    answer: 'Báo đen',
-  },
-  {
-    id: '5864a0f-3da1-471f-bd96-145571e29d7',
-    playerName: 'Em Nghĩa vjp pro',
-    answer: 'Báo đời',
-  },
-  {
-    id: 'bdacbea-c1b1-46c2-aed5-3ad53abb28b',
-    playerName: 'Quangu',
-    answer: 'Báo đốm',
-  },
-  {
-    id: '3a68afc-c605-48d3-a4f8-fbd91aa97f6',
-    playerName: 'Tứn Cùi',
-    answer: 'Báo đen',
-  },
-  {
-    id: '5894a0f-3da1-471f-bd96-145571e29d7',
-    playerName: 'Em Nghĩa vjp pro',
-    answer: 'Báo đời',
-  },
-  {
-    id: 'b7acbea-c1b1-46c2-aed5-3ad53abb28b',
-    playerName: 'Quangu',
-    answer: 'Báo đốm',
-  },
-  {
-    id: '3c68afc-c605-48d3-a4f8-fbd91aa97f6',
-    playerName: 'Tứn Cùi',
-    answer: 'Báo đen',
-  },
-  {
-    id: '5694a0f-3da1-471f-bd96-145571e29d7',
-    playerName: 'Em Nghĩa vjp pro',
-    answer: 'Báo đời',
-  },
-];
+  if (user && room) {
+    if (room.state === 'waiting') {
+      if (user.isHost)
+        return (
+          <View style={styles.startButtonWrapper}>
+            <ThemedButton
+              name="bruce"
+              type="anchor"
+              backgroundColor={members.length < 2 ? colors.grey : colors.green}
+              borderColor="black"
+              backgroundDarker="black"
+              textFontFamily="icielPony"
+              raiseLevel={5}
+              onPress={handleStartPlaying}
+              disabled={members.length < 2}>
+              <Text style={styles.buttonText}>Bắt đầu</Text>
+            </ThemedButton>
+          </View>
+        );
+      else
+        return (
+          <View style={styles.startButtonWrapper}>
+            <Text style={styles.waitingText}>Vui lòng chờ...</Text>
+          </View>
+        );
+    } else {
+      if (user.isDrawing)
+        return (
+          <FastRoom
+            sdkParams={{
+              appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
+              region: 'sg',
+            }}
+            roomParams={{
+              uid: user.uid,
+              uuid: room.uuid,
+              roomToken: room.roomToken,
+            }}
+            style={styles.canvas}
+          />
+        );
+      else
+        return (
+          <WhiteboardView
+            sdkConfig={{
+              appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
+              region: 'sg',
+            }}
+            roomConfig={{
+              uid: user.uid,
+              uuid: room.uuid,
+              roomToken: room.roomToken,
+            }}
+            style={styles.canvas}
+          />
+        );
+    }
+  }
 
-const GuessScreen = () => {
-  const [remainingTime, setRemainingTime] = useState(1);
-  
+  return null;
+};
+
+const GuessScreen = ({navigation, route}) => {
+  const {roomId, user} = route.params;
+  const [roomInfo, setRoomInfo] = useState(null);
+  const [members, setMembers] = useState([]);
+  const [chats, setChats] = useState([]);
+  const [answer, setAnswer] = useState('');
+  const [userInRoom, setUserInRoom] = useState(null);
+
+  useEffect(() => {
+    let unsubscribeRoom = () => {};
+    let unsubscribeMembers = () => {};
+    let unsubscribeChats = () => {};
+    let unsubscribeUser = () => {};
+
+    if (roomId) {
+      unsubscribeRoom = firestore()
+        .collection('rooms')
+        .doc(roomId)
+        .onSnapshot(documentSnapshot => setRoomInfo(documentSnapshot.data()));
+
+      unsubscribeMembers = firestore()
+        .collection('rooms')
+        .doc(roomId)
+        .collection('members')
+        .onSnapshot(querySnapshot => {
+          const users = [];
+          querySnapshot.forEach(documentSnapshot => {
+            users.push({
+              ...documentSnapshot.data(),
+              id: documentSnapshot.id,
+            });
+          });
+
+          setMembers(users);
+        });
+
+      unsubscribeChats = firestore()
+        .collection('rooms')
+        .doc(roomId)
+        .collection('answers')
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(querySnapshot => {
+          const chats = [];
+          querySnapshot.forEach(documentSnapshot => {
+            chats.push({
+              ...documentSnapshot.data(),
+              id: documentSnapshot.id,
+            });
+          });
+
+          setChats(chats);
+        });
+
+      unsubscribeRoom = firestore()
+        .collection('rooms')
+        .doc(roomId)
+        .collection('members')
+        .doc(user.uid)
+        .onSnapshot(documentSnapshot => setUserInRoom(documentSnapshot.data()));
+    }
+
+    return () => {
+      unsubscribeRoom();
+      unsubscribeMembers();
+      unsubscribeChats();
+      unsubscribeUser();
+    };
+  }, [roomId]);
+
+  const handleSendMessage = async () => {
+    if (answer.trim().length > 0)
+      await firestore()
+        .collection('rooms')
+        .doc(roomId)
+        .collection('answers')
+        .add({
+          uid: user.uid,
+          name: user.displayName,
+          answer: answer,
+          createdAt: new Date(),
+          status: 'wrong', // wrong | almost | correct
+        })
+        .then(() => {
+          setAnswer('');
+        });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.drawContainer}>
         <View style={styles.draw}>
-
+          {renderDrawArea(userInRoom, roomInfo, members)}
         </View>
         <View style={styles.tools}>
           <Ionicon name="settings-outline" size={28} color="#4cdafe" />
-          <Feathericon
-            name="alert-triangle"
-            size={28}
-            color="#cc0000"
-          />
+          <Feathericon name="alert-triangle" size={28} color="#cc0000" />
           <Ionicon
             name="information-circle-outline"
             size={28}
@@ -166,10 +190,10 @@ const GuessScreen = () => {
       </View>
 
       <Progress.Bar
-        progress={0.7}
+        progress={1}
         style={styles.progress}
         animationType="timing"
-        height={100}
+        height={16}
         borderRadius={20}
         borderColor="#fff"
         color="#fc8aff"
@@ -180,7 +204,7 @@ const GuessScreen = () => {
         <View style={styles.players}>
           <FlatList
             style={styles.playerList}
-            data={playerData}
+            data={members}
             renderItem={({item}) => <Player player={item} />}
             keyExtractor={item => item.id}
             ItemSeparatorComponent={() => <View style={{height: 16}}></View>}
@@ -189,15 +213,30 @@ const GuessScreen = () => {
         <View style={styles.chat}>
           <FlatList
             style={styles.chatList}
-            data={chatData}
+            data={chats}
             inverted={true}
-            renderItem={({item}) => <Answer chat={item} />}
+            renderItem={({item}) => <Answer answer={item} />}
             keyExtractor={item => item.id}
             ItemSeparatorComponent={() => <View style={{height: 6}}></View>}
           />
           <View style={styles.inputContainer}>
-            <TextInput style={styles.input} placeholder="Nhập câu trả lời" />
-            <Icon name="send" color="#7b54ff" size={20} />
+            <TextInput
+              style={styles.input}
+              placeholder={
+                roomInfo && roomInfo.state === 'playing'
+                  ? 'Nhập câu trả lời'
+                  : 'Vui lòng chờ...'
+              }
+              value={answer}
+              onChangeText={value => setAnswer(value)}
+              onEndEditing={handleSendMessage}
+              editable={roomInfo && roomInfo.state === 'playing'}
+            />
+            <Pressable
+              onPress={handleSendMessage}
+              disabled={roomInfo && roomInfo.state === 'waiting'}>
+              <Icon name="send" color="#7b54ff" size={20} />
+            </Pressable>
           </View>
         </View>
       </View>
@@ -206,6 +245,7 @@ const GuessScreen = () => {
 };
 
 export default GuessScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -216,24 +256,27 @@ const styles = StyleSheet.create({
   },
   drawContainer: {
     position: 'relative',
-    flex: 0.36,
+    flex: 0.4,
   },
   draw: {
-    width: "100%",
-    height: "100%",
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
     borderRadius: 20,
     backgroundColor: '#fff',
   },
   tools: {
+    position: 'absolute',
     display: 'flex',
     gap: 12,
     alignSelf: 'flex-start',
-    position: 'absolute',
     top: 12,
     right: 12,
   },
   progress: {
-    flex: 0.04,
+    height: 16,
     marginVertical: 8,
   },
   chatContainer: {
@@ -270,5 +313,28 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 5,
     color: '#a4a4a4',
+  },
+  startButtonWrapper: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontFamily: 'icielPony',
+    fontSize: 30,
+    color: '#333',
+  },
+  canvas: {
+    width: '100%',
+    height: '100%',
+    container: {
+      width: '100%',
+      height: '100%',
+    },
+  },
+  waitingText: {
+    fontSize: 18,
   },
 });
