@@ -1,20 +1,57 @@
 import auth from '@react-native-firebase/auth';
-import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import {
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  View,
+  Alert,
+} from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../assets/colors';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({navigation, route}) => {
+  const {user} = route.params;
   const onCreateRoom = () => {
     navigation.navigate('CreateRoomScreen');
   };
 
   const signOut = () => {
+    GoogleSignin.revokeAccess();
     auth().signOut();
   };
 
-  const handleJoinRandomRoom = () => {};
+  const handleJoinRandomRoom = () => {
+    firestore()
+      .collection('rooms')
+      .where('canJoin', '==', true)
+      .get()
+      .then(querySnapshot => {
+        if (querySnapshot.docs.length > 0) {
+          querySnapshot.docs[0].ref
+            .collection('members')
+            .doc(user.uid)
+            .set({
+              isHost: false,
+              isDrawing: false,
+              points: 0,
+              name: user.displayName,
+              uid: user.uid,
+              photo: user.photoURL,
+            })
+            .then(() => {
+              navigation.navigate('GuessScreen', {
+                roomId: querySnapshot.docs[0].id,
+                user,
+              });
+            });
+        } else Alert.alert('Không còn phòng trống! Vui lòng tạo phòng mới');
+      });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -80,7 +117,8 @@ const HomeScreen = ({navigation}) => {
             backgroundDarker="black"
             textFontFamily="icielPony"
             raiseLevel={5}
-            style={styles.button}>
+            style={styles.button}
+            onPress={handleJoinRandomRoom}>
             <Text style={styles.text}>Bắt đầu</Text>
           </ThemedButton>
           <ThemedButton

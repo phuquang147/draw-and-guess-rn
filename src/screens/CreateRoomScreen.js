@@ -1,4 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
 import firestore from '@react-native-firebase/firestore';
 import {Picker} from '@react-native-picker/picker';
 import {useEffect, useState} from 'react';
@@ -60,6 +59,7 @@ const CreateRoomScreen = ({navigation, route}) => {
               uuid,
               roomToken,
               maxMember: selectedNumber,
+              canJoin: true,
               endPoint: selectedPoint,
               currentWord: null,
               state: 'waiting', // waiting | playing
