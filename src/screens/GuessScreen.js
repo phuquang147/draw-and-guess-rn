@@ -9,6 +9,7 @@ import CorrectAnswer from '../components/CorrectAnswer';
 import AlmostCorrectAnswer from '../components/AlmostCorrectAnswer';
 import Answer from '../components/Answer';
 import { useState } from 'react';
+import GameOverRanking from '../components/GameOverRanking';
 
 const playerData = [
   {
@@ -141,14 +142,11 @@ const chatData = [
 ];
 
 const GuessScreen = () => {
-  const [remainingTime, setRemainingTime] = useState(1);
-  
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.drawContainer}>
         <View style={styles.draw}>
-
+          <GameOverRanking players={playerData}/>
         </View>
         <View style={styles.tools}>
           <Ionicon name="settings-outline" size={28} color="#4cdafe" />
