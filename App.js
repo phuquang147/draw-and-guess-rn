@@ -1,23 +1,54 @@
+import auth from '@react-native-firebase/auth';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import CreateRoomScreen from './src/screens/CreateRoomScreen';
 import DrawScreen from './src/screens/DrawScreen';
 import GuessScreen from './src/screens/GuessScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
+import firestore from '@react-native-firebase/firestore';
 
 const Stack = createNativeStackNavigator();
 
 function App() {
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  const onAuthStateChanged = async user => {
+    setUser(user);
+
+    if (user) {
+      const saveduser = await firestore()
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+      if (!saveduser.exists) {
+        firestore().collection('users').doc(user.uid).set({
+          name: user.displayName,
+          email: user.email,
+          photo: user.photoURL,
+        });
+      }
+    }
+    if (initializing) setInitializing(false);
+  };
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber;
+  }, []);
+
+  if (initializing) return null;
+
+  if (!user) {
+    return <LoginScreen />;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="LoginScreen"
-          component={LoginScreen}
-          options={{headerShown: false}}
-        />
         <Stack.Screen
           name="Home"
           component={HomeScreen}
@@ -31,6 +62,7 @@ function App() {
         <Stack.Screen
           name="CreateRoomScreen"
           component={CreateRoomScreen}
+          initialParams={{user}}
           options={{headerShown: false}}
         />
         <Stack.Screen

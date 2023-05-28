@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "145827713844",
+    "project_id": "drawandguessgame",
+    "storage_bucket": "drawandguessgame.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145827713844:android:7b4b6be4cbd7403ad90b61",
+        "android_client_info": {
+          "package_name": "com.drawandguessgame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "145827713844-772qih5pfjebas589cdjinmlm7m9sie8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.drawandguessgame",
+            "certificate_hash": "455f280d06999a3d4eb93bc878140c47e7dd0b2d"
+          }
+        },
+        {
+          "client_id": "145827713844-3t89ra9al6holq17g0igjnu28q1qock9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIjWsCqK90Fj6i0wbs6gl8iIue4ZLayQE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "145827713844-3t89ra9al6holq17g0igjnu28q1qock9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
