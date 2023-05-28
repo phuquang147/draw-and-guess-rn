@@ -7,7 +7,7 @@ const ChatRoomServices = {
       method: 'POST',
       headers: {
         token:
-          'NETLESSSDK_YWs9Zl9adUFmaVFwOENvRGY3dSZub25jZT1jOWIwMDIxMC1mYWM1LTExZWQtOGE1OC01NzMzZDk0MDkxMDImcm9sZT0wJnNpZz1hZjdkYTRkYWI1MTQ0MGM3Nzk4YjU3NGZmN2M4OGVhNGViN2RjYjU2MWMwZWU1NDk0YzJhOWRiMzY5ZjU2ZDll',
+          'NETLESSSDK_YWs9Zl9adUFmaVFwOENvRGY3dSZub25jZT01MjI3YjBhMC1mZDJhLTExZWQtOTI2My01ZjgyYjNlZjEzMTUmcm9sZT0wJnNpZz0yMjY3NzQ1M2RlMzM4NDA0MDQ1Yzc0NjM0NDY4NzEzZTY2YTIyYzMwNzY3NzFlY2Q5MGQxMmMzYWE0YTUyZmY5',
         region: 'sg',
       },
     });
@@ -18,7 +18,7 @@ const ChatRoomServices = {
       method: 'POST',
       headers: {
         token:
-          'NETLESSSDK_YWs9Zl9adUFmaVFwOENvRGY3dSZub25jZT1hZTNhNmI5MC1mODViLTExZWQtYTRhYS05NTVjMDAzNDVkZmQmcm9sZT0wJnNpZz1mY2YxZDEwOWVkZjY2Y2M5NTg4Njg5MDFiM2UzOWEzMzJkMmUxOGY5YTUwMjc5MDJiNjA0MDBiM2YzNWZmYmY2',
+          'NETLESSSDK_YWs9Zl9adUFmaVFwOENvRGY3dSZub25jZT01MjI3YjBhMC1mZDJhLTExZWQtOTI2My01ZjgyYjNlZjEzMTUmcm9sZT0wJnNpZz0yMjY3NzQ1M2RlMzM4NDA0MDQ1Yzc0NjM0NDY4NzEzZTY2YTIyYzMwNzY3NzFlY2Q5MGQxMmMzYWE0YTUyZmY5',
         region: 'sg',
         'Content-Type': 'application/json',
       },

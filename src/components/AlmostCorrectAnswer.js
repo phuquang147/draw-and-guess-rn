@@ -1,11 +1,12 @@
-import {View, Text, Image, StyleSheet} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
+
 const AlmostCorrectAnswer = ({answer}) => {
   return (
     <View style={styles.container}>
       <Icon name="flash" size={18} color="#ff9100" />
       <Text style={[styles.text, {fontWeight: 'bold'}]}>
-        {answer} <Text style={styles.text}>gần đúng!</Text>
+        {answer.answer} <Text style={styles.text}>gần đúng!</Text>
       </Text>
     </View>
   );

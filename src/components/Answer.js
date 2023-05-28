@@ -1,26 +1,16 @@
-import {View, Text, Image, StyleSheet} from 'react-native';
-const Answer = ({chat}) => {
-  return (
-    <View style={styles.container}>
-      <Text style={[styles.text, {fontWeight: 'bold'}]}>
-        {chat.playerName} <Text style={styles.text}>{chat.answer}</Text>
-      </Text>
-    </View>
-  );
-};
+const {default: AlmostCorrectAnswer} = require('./AlmostCorrectAnswer');
+const {default: CorrectAnswer} = require('./CorrectAnswer');
+const {default: WrongAnswer} = require('./WrongAnswer');
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 16,
-    color: '#959ba3',
-    fontFamily: 'Open Sans',
-  },
-});
+const Answer = ({answer}) => {
+  switch (answer.status) {
+    case 'almost':
+      return <AlmostCorrectAnswer answer={answer} />;
+    case 'correct':
+      return <CorrectAnswer answer={answer} />;
+    default:
+      return <WrongAnswer answer={answer} />;
+  }
+};
 
 export default Answer;
