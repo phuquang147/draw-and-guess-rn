@@ -21,8 +21,7 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const signOut = () => {
-    GoogleSignin.revokeAccess();
-    auth().signOut();
+    navigation.navigate('ProfileScreen', {userId: user.uid});
   };
 
   const handleJoinRandomRoom = () => {
@@ -76,7 +75,7 @@ const HomeScreen = ({navigation, route}) => {
             width={null}
             raiseLevel={5}
             onPress={signOut}>
-            <Icon name="sign-out" size={24} color="white" />
+            <Icon name="user" size={24} color="white" />
           </ThemedButton>
         </View>
         <View style={styles.content}>

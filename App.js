@@ -8,6 +8,7 @@ import DrawScreen from './src/screens/DrawScreen';
 import GuessScreen from './src/screens/GuessScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,13 +18,11 @@ function App() {
 
   const onAuthStateChanged = async user => {
     setUser(user);
-
     if (user) {
       const saveduser = await firestore()
         .collection('users')
         .doc(user.uid)
         .get();
-
       if (!saveduser.exists) {
         firestore().collection('users').doc(user.uid).set({
           name: user.displayName,
@@ -59,6 +58,11 @@ function App() {
           name="CreateRoomScreen"
           component={CreateRoomScreen}
           initialParams={{user}}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="ProfileScreen"
+          component={ProfileScreen}
           options={{headerShown: false}}
         />
         <Stack.Screen
