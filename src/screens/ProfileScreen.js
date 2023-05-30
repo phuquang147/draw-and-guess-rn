@@ -1,5 +1,6 @@
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 import {useEffect, useState} from 'react';
 import {
   Image,
@@ -9,18 +10,24 @@ import {
   View,
   Alert,
   TextInput,
+  TouchableOpacity,
 } from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../assets/colors';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import WordSelectionModal from '../components/WordSelectionModal';
+import PhotoSelectionModal from '../components/PhotoSelectionModal';
 
 const ProfileScreen = ({navigation, route}) => {
   const {userId} = route.params;
   const [user, setUser] = useState();
   const [editable, setEditable] = useState(false);
   const [name, setName] = useState();
+  // const [photo, setPhoto] = useState();
+  const [visibleModal, setVisiableModal] = useState(false);
 
   useEffect(() => {
     let subscribeUser = () => {};
@@ -32,6 +39,7 @@ const ProfileScreen = ({navigation, route}) => {
         .onSnapshot(documentSnapshot => {
           setUser(documentSnapshot.data());
           setName(documentSnapshot.data().name);
+          // setPhoto(documentSnapshot.data().photo);
         });
     }
     return () => {
@@ -74,6 +82,84 @@ const ProfileScreen = ({navigation, route}) => {
       });
   };
 
+  const selectImageFromLibrary = () => {
+    const options = {
+      maxWidth: 2000,
+      maxHeight: 2000,
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    launchImageLibrary(options, response => {
+      console.log(response);
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        const source = {uri: response.assets[0].uri};
+        console.log(source);
+        uploadImage(source.uri);
+      }
+    });
+  };
+
+  const selectImageFromCamera = () => {
+    const options = {
+      maxWidth: 2000,
+      maxHeight: 2000,
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    launchCamera(options, response => {
+      console.log(response);
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        const source = {uri: response.assets[0].uri};
+        console.log(source);
+        uploadImage(source.uri);
+      }
+    });
+  };
+
+  const selectImage = () => {
+    setVisiableModal(true);
+  };
+
+  const uploadImage = async photo => {
+    const uri = photo;
+    const filename = uri.substring(uri.lastIndexOf('/') + 1);
+    const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+    const task = storage().ref(filename).putFile(uploadUri);
+    try {
+      await task;
+      const reference = storage().ref(filename);
+      const imageUrl = await reference.getDownloadURL();
+      firestore()
+        .collection('users')
+        .doc(userId)
+        .update({
+          photo: imageUrl,
+        })
+        .then(() => {
+          Alert.alert('Thay đổi thành công!');
+          setVisiableModal(false);
+        });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
@@ -103,12 +189,15 @@ const ProfileScreen = ({navigation, route}) => {
         {user && (
           <View style={styles.content}>
             <View style={styles.avatarContainer}>
-              <Image
-                style={styles.avatar}
-                source={{
-                  uri: user.photo,
-                }}
-              />
+              <TouchableOpacity onPress={selectImage}>
+                <Image
+                  style={styles.avatar}
+                  source={{
+                    uri: user?.photo,
+                  }}
+                />
+              </TouchableOpacity>
+
               <TextInput
                 style={styles.input}
                 value={name}
@@ -176,6 +265,13 @@ const ProfileScreen = ({navigation, route}) => {
           </View>
         )}
       </ImageBackground>
+      {visibleModal && <View style={styles.overlay}></View>}
+      <PhotoSelectionModal
+        visible={visibleModal}
+        setVisiable={setVisiableModal}
+        onCamera={selectImageFromCamera}
+        onPhotoLibrary={selectImageFromLibrary}
+      />
     </SafeAreaView>
   );
 };
@@ -190,6 +286,12 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     // resizeMode: "contain",
+  },
+  overlay: {
+    position: 'absolute',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    width: '100%',
+    height: '100%',
   },
   logo: {
     height: 80,
