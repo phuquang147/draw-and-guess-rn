@@ -1796,6 +1796,16 @@
   "resolved" "https://registry.npmjs.org/@react-native-firebase/firestore/-/firestore-17.5.0.tgz"
   "version" "17.5.0"
 
+"@react-native-firebase/functions@^17.5.0":
+  "integrity" "sha512-LBqJ/WpG7NvmUUBKSVwPynENuBNhATNedlpm4qD2DS1vSJaY4/KWuHp7l5osz14qWt+4rUX3UgqFH5+4eg39XQ=="
+  "resolved" "https://registry.npmjs.org/@react-native-firebase/functions/-/functions-17.5.0.tgz"
+  "version" "17.5.0"
+
+"@react-native-firebase/storage@^17.5.0":
+  "integrity" "sha512-E5lemuaGCFxMCDIFvAlaG98SwLNJz9RIhg0f5up/uU9oZ9JIeodbWvwfZMlSupmvaKTvM2U+YFFmugdv2q9jrg=="
+  "resolved" "https://registry.npmjs.org/@react-native-firebase/storage/-/storage-17.5.0.tgz"
+  "version" "17.5.0"
+
 "@react-native-google-signin/google-signin@^10.0.1":
   "integrity" "sha512-oZoU2lfKyn0s0GqqdFsi4v2FSENrxQYQU9DD/RSkxDdkIQ49Wwo6p5LKlgXY04GwZEVdYMuvZN3G89gQW0ig2g=="
   "resolved" "https://registry.npmjs.org/@react-native-google-signin/google-signin/-/google-signin-10.0.1.tgz"
@@ -6561,6 +6571,11 @@
   "integrity" "sha512-7F6bD7B8Xsn3JllxcwHhFcsl9aHIig47+3eN4IHFNqfLhZr++3ElDrcqfMzugM+niWbaMi7bJ0kAkAL8eCpdWg=="
   "resolved" "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.18.tgz"
   "version" "0.71.18"
+
+"react-native-image-picker@^5.4.0":
+  "integrity" "sha512-qtLroIqpHADaR0/XJBD7E0boq+AAVT6wXvY4+pzrHjx12Lx2BhpFZH0rlWc/HIqeWBhZckAIpZ0ndapiGEMdYg=="
+  "resolved" "https://registry.npmjs.org/react-native-image-picker/-/react-native-image-picker-5.4.0.tgz"
+  "version" "5.4.0"
 
 "react-native-progress@^5.0.0":
   "integrity" "sha512-KjnGIt3r9i5Kn2biOD9fXLJocf0bwxPRxOyAgXEnZTJQU2O+HyzgGFRCbM5h3izm9kKIkSc1txh8aGmMafCD9A=="

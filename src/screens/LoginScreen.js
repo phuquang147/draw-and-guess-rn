@@ -6,6 +6,8 @@ import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../assets/colors';
+import WordSelectionModal from '../components/WordSelectionModal';
+import PhotoSelectionModal from '../components/PhotoSelectionModal';
 
 GoogleSignin.configure({
   webClientId:
@@ -77,6 +79,7 @@ const LoginScreen = () => {
           </ThemedButton>
         </View>
       </ImageBackground>
+      {/* <PhotoSelectionModal /> */}
     </SafeAreaView>
   );
 };
@@ -91,6 +94,7 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     // resizeMode: "contain",
+    color: 'red',
   },
   logo: {
     height: 80,
@@ -102,7 +106,7 @@ const styles = StyleSheet.create({
   },
   header: {
     // flex: 1,
-    // backgroundColor: "red",
+    // backgroundColor: 'red',
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 10,

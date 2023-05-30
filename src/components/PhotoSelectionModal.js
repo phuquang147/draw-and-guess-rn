@@ -8,25 +8,35 @@ import {
   View,
   Image,
   Dimensions,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import * as Progress from 'react-native-progress';
 
-import colors from '../../assets/colors';
+import colors from '../assets/colors';
 
 const windowWidth = Dimensions.get('window').width;
 
-const OverlayModal = ({visible, keyWord}) => {
-  const onSkip = () => {};
-  const onDraw = () => {};
+const PhotoSelectionModal = ({
+  visible,
+  setVisiable,
+  onPhotoLibrary,
+  onCamera,
+}) => {
+  const onClose = () => {
+    setVisiable(false);
+  };
 
   return (
-    <Modal animationType="fade" transparent={true} visible={true}>
-      <View style={styles.overlayView}>
-        <View style={styles.modalView}>
-          <Text style={styles.modalText}>Đến lượt của bạn rồi đó!</Text>
-          <Text style={styles.keyWord}>{keyWord ?? 'CON CHÓ'}</Text>
-          <View style={styles.btnContainer}>
+    <Modal animationType="slide" transparent={true} visible={visible}>
+      <Pressable
+        animationType="fade"
+        style={styles.overlayView}
+        onPress={() => onClose()}>
+        {/* <Pressable style={{backgroundColor: 'red'}} onPressOut={onCamera()}> */}
+        <TouchableWithoutFeedback style={{backgroundColor: 'red'}}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Chọn ảnh từ </Text>
             <ThemedButton
               name="bruce"
               type="anchor"
@@ -35,10 +45,9 @@ const OverlayModal = ({visible, keyWord}) => {
               backgroundDarker="black"
               textFontFamily="icielPony"
               raiseLevel={5}
-              width={windowWidth * 0.3}
               style={styles.button}
-              onPress={onSkip}>
-              <Text style={styles.text}>Bỏ lượt</Text>
+              onPress={onCamera}>
+              <Text style={styles.text}>Camera</Text>
             </ThemedButton>
             <ThemedButton
               name="bruce"
@@ -48,25 +57,13 @@ const OverlayModal = ({visible, keyWord}) => {
               backgroundDarker="black"
               textFontFamily="icielPony"
               raiseLevel={5}
-              width={windowWidth * 0.3}
               style={styles.button}
-              onPress={onDraw}>
-              <Text style={styles.text}>Vẽ</Text>
+              onPress={onPhotoLibrary}>
+              <Text style={styles.text}>Thư viện ảnh</Text>
             </ThemedButton>
           </View>
-          <Progress.Bar
-            progress={0.7}
-            style={styles.progress}
-            animationType="timing"
-            height={10}
-            borderRadius={20}
-            borderColor={colors.darkBlue}
-            color={colors.primary}
-            unfilledColor={colors.darkBlue}
-            width={windowWidth * 0.8}
-          />
-        </View>
-      </View>
+        </TouchableWithoutFeedback>
+      </Pressable>
     </Modal>
   );
 };
@@ -75,15 +72,16 @@ const styles = StyleSheet.create({
   overlayView: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+    // backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalView: {
-    margin: 20,
     backgroundColor: 'white',
-    borderRadius: 16,
+    borderTopStartRadius: 16,
+    borderTopEndRadius: 16,
+
     borderWidth: 2,
-    paddingTop: 35,
+    paddingVertical: 20,
     paddingHorizontal: 35,
     alignItems: 'center',
     shadowColor: '#000',
@@ -95,7 +93,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     marginHorizontal: 20,
-    width: windowWidth * 0.9,
+    width: windowWidth,
+    gap: 20,
   },
   button: {
     // borderRadius: 20,
@@ -106,7 +105,8 @@ const styles = StyleSheet.create({
 
   modalText: {
     fontFamily: 'icielPony',
-    fontSize: 20,
+    fontSize: 26,
+    color: 'black',
   },
 
   keyWord: {
@@ -131,4 +131,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OverlayModal;
+export default PhotoSelectionModal;
