@@ -6,19 +6,40 @@ const GameOverRanking = ({players}) => {
       <Text style={styles.title}>Game over</Text>
       <View style={styles.ranking}>
         <View style={styles.other}>
-          <Image source={{uri: players[1].avatar}} style={styles.avatar} />
+          <View style={styles.avatarContainer}>
+            <Image source={{uri: players[1].avatar}} style={styles.avatar} />
+            <Image
+              source={require('../assets/images/top2.png')}
+              style={styles.medal}
+              resizeMode="contain"
+            />
+          </View>
           <Text style={styles.name} numberOfLines={1}>
             {players[1].name}
           </Text>
         </View>
         <View style={[styles.other, {alignSelf: 'flex-start'}]}>
-          <Image source={{uri: players[0].avatar}} style={styles.avatar} />
+          <View>
+            <Image source={{uri: players[0].avatar}} style={styles.avatar} />
+            <Image
+              source={require('../assets/images/top1.png')}
+              style={styles.medal}
+              resizeMode="contain"
+            />
+          </View>
           <Text style={styles.name} numberOfLines={1}>
             {players[0].name}
           </Text>
         </View>
         <View style={styles.other}>
-          <Image source={{uri: players[2].avatar}} style={styles.avatar} />
+          <View>
+            <Image source={{uri: players[2].avatar}} style={styles.avatar} />
+            <Image
+              source={require('../assets/images/top3.png')}
+              style={styles.medal}
+              resizeMode="contain"
+            />
+          </View>
           <Text style={styles.name} numberOfLines={1}>
             {players[2].name}
           </Text>
@@ -46,17 +67,28 @@ const styles = StyleSheet.create({
   },
   name: {
     fontFamily: 'icielPony',
-    fontSize: 16
+    fontSize: 16,
   },
   avatar: {
-    width: '60%',
+    width: '75%',
     aspectRatio: 1,
     borderRadius: 100,
+    alignSelf: 'center',
   },
   other: {
     flex: 1,
     alignItems: 'center',
-    alignSelf: 'flex-end'
+    alignSelf: 'flex-end',
+    gap: 30,
+  },
+  avatarContainer: {
+    position: 'relative',
+  },
+  medal: {
+    width: 50,
+    alignSelf: 'center',
+    position: 'absolute',
+    top: 0,
   },
 });
 
