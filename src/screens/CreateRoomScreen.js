@@ -61,7 +61,7 @@ const CreateRoomScreen = ({navigation, route}) => {
               maxMember: selectedNumber,
               canJoin: true,
               endPoint: selectedPoint,
-              point: 10,
+              correctCount: 0,
               currentWord: null,
               currentMember: null, // docRef
               state: 'waiting', // waiting | choosing | drawing
