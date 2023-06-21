@@ -61,13 +61,18 @@ const CreateRoomScreen = ({navigation, route}) => {
               maxMember: selectedNumber,
               canJoin: true,
               endPoint: selectedPoint,
+              point: 10,
               currentWord: null,
-              state: 'waiting', // waiting | playing
+              currentMember: null, // docRef
+              state: 'waiting', // waiting | choosing | drawing
+              roundCount: 0,
             })
             .then(room => {
               room.collection('members').doc(user.uid).set({
                 isHost: true,
+                isCorrect: false,
                 isDrawing: false,
+                isChoosing: false,
                 points: 0,
                 name: user.displayName,
                 uid: user.uid,
@@ -76,7 +81,10 @@ const CreateRoomScreen = ({navigation, route}) => {
 
               const batch = firestore().batch();
               for (let word of topics[selectedTopic].words) {
-                batch.set(room.collection('words').doc(), {value: word});
+                batch.set(room.collection('words').doc(), {
+                  value: word,
+                  roundCount: 0,
+                });
               }
               batch.commit().then(() => {
                 navigation.navigate('GuessScreen', {roomId: room.id, user});
