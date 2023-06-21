@@ -1,39 +1,33 @@
-import React, {useState} from 'react';
-import {
-  Alert,
-  Modal,
-  StyleSheet,
-  Text,
-  Pressable,
-  View,
-  Image,
-  Dimensions,
-  TouchableWithoutFeedback,
-} from 'react-native';
-import {ThemedButton} from 'react-native-really-awesome-button';
+import React, {useEffect, useState} from 'react';
+import {Dimensions, Modal, StyleSheet, Text, View} from 'react-native';
 import * as Progress from 'react-native-progress';
+import {ThemedButton} from 'react-native-really-awesome-button';
 
 import colors from '../assets/colors';
 
 const windowWidth = Dimensions.get('window').width;
 
-const WordSelectionModal = ({visible, keyWord}) => {
-  // const [visible, setVisiable] = useState(true);
+const WordSelectionModal = ({wordRef, onSkip, onDraw}) => {
+  const [keyWord, setKeyWord] = useState('');
+  const [remainingTime, setRemainingTime] = useState(10000);
 
-  const onSkip = () => {
-    console.log('Skip');
-  };
-  const onDraw = () => {
-    console.log('Draw');
-  };
-  const onClose = () => {
-    setVisiable(false);
-  };
+  useEffect(() => {
+    wordRef.get().then(value => setKeyWord(value.data().value));
+  }, []);
+
+  useEffect(() => {
+    setInterval(() => {
+      setRemainingTime(prev => prev - 1000);
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    if (remainingTime <= 0) onSkip();
+  }, [remainingTime]);
 
   return (
-    <Modal animationType="fade" transparent={true} visible={visible}>
-      <View style={styles.overlayView} onPress={() => onClose()}>
-        {/* <Pressable style={{backgroundColor: 'red'}} onPressOut={onClose()}> */}
+    <Modal animationType="fade" transparent={true} visible={true}>
+      <View style={styles.overlayView}>
         <View>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Đến lượt của bạn rồi đó!</Text>
@@ -67,7 +61,7 @@ const WordSelectionModal = ({visible, keyWord}) => {
               </ThemedButton>
             </View>
             <Progress.Bar
-              progress={0.7}
+              progress={remainingTime / 10000}
               style={styles.progress}
               animationType="timing"
               height={10}
