@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {Dimensions, Modal, StyleSheet, Text, View} from 'react-native';
 import * as Progress from 'react-native-progress';
 import {ThemedButton} from 'react-native-really-awesome-button';
-
 import colors from '../assets/colors';
 
 const windowWidth = Dimensions.get('window').width;
@@ -12,7 +11,7 @@ const WordSelectionModal = ({wordRef, onSkip, onDraw}) => {
   const [remainingTime, setRemainingTime] = useState(10000);
 
   useEffect(() => {
-    wordRef.get().then(value => setKeyWord(value.data().value));
+    wordRef?.get().then(value => setKeyWord(value.data().value));
   }, []);
 
   useEffect(() => {

@@ -6,7 +6,7 @@ const AlmostCorrectAnswer = ({answer}) => {
     <View style={styles.container}>
       <Icon name="flash" size={18} color="#ff9100" />
       <Text style={[styles.text, {fontWeight: 'bold'}]}>
-        {answer.answer} <Text style={styles.text}>gần đúng!</Text>
+        {answer.name} <Text style={styles.text}>gần đúng!</Text>
       </Text>
     </View>
   );
