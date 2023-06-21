@@ -228,6 +228,12 @@ const GuessScreen = ({navigation, route}) => {
           });
 
       if (status === 'correct') {
+        await roomInfo.currentMember.update({
+          points: firestore.FieldValue.increment(
+            roomInfo.correctCount === 0 ? 11 : 2,
+          ),
+        });
+
         await firestore()
           .collection('rooms')
           .doc(roomId)
@@ -235,14 +241,16 @@ const GuessScreen = ({navigation, route}) => {
           .doc(user.uid)
           .update({
             isCorrect: true,
-            points: firestore.FieldValue.increment(roomInfo.point),
+            points: firestore.FieldValue.increment(
+              roomInfo.correctCount < 8 ? 10 - roomInfo.correctCount : 2,
+            ),
           });
 
         await firestore()
           .collection('rooms')
           .doc(roomId)
           .update({
-            point: roomInfo.point > 1 ? firestore.FieldValue.increment(-1) : 1,
+            correctCount: firestore.FieldValue.increment(1),
           });
       }
     });
