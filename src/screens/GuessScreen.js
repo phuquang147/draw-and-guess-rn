@@ -16,12 +16,18 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Feathericon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Ionicon from 'react-native-vector-icons/Ionicons';
+import {stringSimilarity} from 'string-similarity-js';
 import colors from '../assets/colors';
 import Answer from '../components/Answer';
 import Player from '../components/Player';
+import WordSelectionModal from '../components/WordSelectionModal';
 
 const renderDrawArea = (user, room, members) => {
-  const handleStartPlaying = async () => {};
+  const handleStartPlaying = async () => {
+    firestore().collection('rooms').doc(room.id).update({
+      state: 'choosing',
+    });
+  };
 
   if (user && room) {
     if (room.state === 'waiting') {
@@ -49,7 +55,8 @@ const renderDrawArea = (user, room, members) => {
           </View>
         );
     } else {
-      if (user.isDrawing)
+      if (user.isDrawing) {
+        console.log('abahsbhd');
         return (
           <FastRoom
             sdkParams={{
@@ -64,7 +71,7 @@ const renderDrawArea = (user, room, members) => {
             style={styles.canvas}
           />
         );
-      else
+      } else
         return (
           <WhiteboardView
             sdkConfig={{
@@ -92,6 +99,8 @@ const GuessScreen = ({navigation, route}) => {
   const [chats, setChats] = useState([]);
   const [answer, setAnswer] = useState('');
   const [userInRoom, setUserInRoom] = useState(null);
+  const [wordSelectionModalVisible, setWordSelectionModalVisible] =
+    useState(false);
 
   useEffect(() => {
     let unsubscribeRoom = () => {};
@@ -103,7 +112,9 @@ const GuessScreen = ({navigation, route}) => {
       unsubscribeRoom = firestore()
         .collection('rooms')
         .doc(roomId)
-        .onSnapshot(documentSnapshot => setRoomInfo(documentSnapshot.data()));
+        .onSnapshot(documentSnapshot =>
+          setRoomInfo({...documentSnapshot.data(), id: documentSnapshot.id}),
+        );
 
       unsubscribeMembers = firestore()
         .collection('rooms')
@@ -154,22 +165,87 @@ const GuessScreen = ({navigation, route}) => {
     };
   }, [roomId]);
 
-  const handleSendMessage = async () => {
-    if (answer.trim().length > 0)
-      await firestore()
-        .collection('rooms')
-        .doc(roomId)
-        .collection('answers')
-        .add({
-          uid: user.uid,
-          name: user.displayName,
-          answer: answer,
-          createdAt: new Date(),
-          status: 'wrong', // wrong | almost | correct
-        })
-        .then(() => {
-          setAnswer('');
-        });
+  useEffect(() => {
+    if (userInRoom && userInRoom.isChoosing) setWordSelectionModalVisible(true);
+  }, [userInRoom]);
+
+  const handleSkip = () => {
+    firestore().collection('rooms').doc(roomId).update({state: 'choosing'});
+    firestore()
+      .collection('rooms')
+      .doc(roomId)
+      .collection('members')
+      .doc(userInRoom.uid)
+      .update({isChoosing: false});
+    setWordSelectionModalVisible(false);
+  };
+
+  const handleDraw = () => {
+    firestore().collection('rooms').doc(roomId).update({state: 'playing'});
+    firestore()
+      .collection('rooms')
+      .doc(roomId)
+      .collection('members')
+      .doc(userInRoom.uid)
+      .update({isChoosing: false, isDrawing: true});
+    setWordSelectionModalVisible(false);
+  };
+
+  const handleSendMessage = () => {
+    let status = 'wrong';
+    roomInfo.currentWord.get().then(async value => {
+      if (roomInfo.currentWord) {
+        if (
+          stringSimilarity(
+            value.data().value.toLowerCase(),
+            answer.toLowerCase(),
+          ) === 1
+        )
+          status = 'correct';
+        else if (
+          stringSimilarity(
+            value.data().value.toLowerCase(),
+            answer.toLowerCase(),
+          ) >= 0.5
+        )
+          status = 'almost';
+      }
+
+      if (answer.trim().length > 0)
+        await firestore()
+          .collection('rooms')
+          .doc(roomId)
+          .collection('answers')
+          .add({
+            uid: user.uid,
+            name: user.displayName,
+            answer: answer,
+            createdAt: new Date(),
+            status, // wrong | almost | correct
+          })
+          .then(() => {
+            setAnswer('');
+          });
+
+      if (status === 'correct') {
+        await firestore()
+          .collection('rooms')
+          .doc(roomId)
+          .collection('members')
+          .doc(user.uid)
+          .update({
+            isCorrect: true,
+            points: firestore.FieldValue.increment(roomInfo.point),
+          });
+
+        await firestore()
+          .collection('rooms')
+          .doc(roomId)
+          .update({
+            point: roomInfo.point > 1 ? firestore.FieldValue.increment(-1) : 1,
+          });
+      }
+    });
   };
 
   return (
@@ -230,16 +306,31 @@ const GuessScreen = ({navigation, route}) => {
               value={answer}
               onChangeText={value => setAnswer(value)}
               onEndEditing={handleSendMessage}
-              editable={roomInfo && roomInfo.state === 'playing'}
+              editable={
+                roomInfo &&
+                roomInfo.state === 'playing' &&
+                userInRoom &&
+                !userInRoom.isCorrect
+              }
             />
             <Pressable
               onPress={handleSendMessage}
-              disabled={roomInfo && roomInfo.state === 'waiting'}>
+              disabled={
+                (roomInfo && roomInfo.state === 'waiting') ||
+                (userInRoom && userInRoom.isCorrect)
+              }>
               <Icon name="send" color="#7b54ff" size={20} />
             </Pressable>
           </View>
         </View>
       </View>
+      {wordSelectionModalVisible && (
+        <WordSelectionModal
+          wordRef={roomInfo?.currentWord}
+          onDraw={handleDraw}
+          onSkip={handleSkip}
+        />
+      )}
     </SafeAreaView>
   );
 };
