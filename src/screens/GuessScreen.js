@@ -332,7 +332,7 @@ const GuessScreen = ({navigation, route}) => {
           </View>
         </View>
       </View>
-      {wordSelectionModalVisible && (
+      {roomInfo?.currentWord && wordSelectionModalVisible && (
         <WordSelectionModal
           wordRef={roomInfo?.currentWord}
           onDraw={handleDraw}
