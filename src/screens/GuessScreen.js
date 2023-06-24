@@ -56,7 +56,6 @@ const renderDrawArea = (user, room, members) => {
         );
     } else {
       if (user.isDrawing) {
-        console.log('abahsbhd');
         return (
           <FastRoom
             sdkParams={{
@@ -170,7 +169,7 @@ const GuessScreen = ({navigation, route}) => {
   }, [userInRoom]);
 
   const handleSkip = () => {
-    firestore().collection('rooms').doc(roomId).update({state: 'choosing'});
+    firestore().collection('rooms').doc(roomId).update({state: 'skipping'});
     firestore()
       .collection('rooms')
       .doc(roomId)
@@ -318,7 +317,8 @@ const GuessScreen = ({navigation, route}) => {
                 roomInfo &&
                 roomInfo.state === 'playing' &&
                 userInRoom &&
-                !userInRoom.isCorrect
+                !userInRoom.isCorrect &&
+                !userInRoom.isDrawing
               }
             />
             <Pressable

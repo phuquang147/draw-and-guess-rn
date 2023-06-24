@@ -77,6 +77,7 @@ const CreateRoomScreen = ({navigation, route}) => {
                 name: user.displayName,
                 uid: user.uid,
                 photo: user.photoURL,
+                roundCount: 0,
               });
 
               const batch = firestore().batch();

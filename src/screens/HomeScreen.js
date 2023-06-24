@@ -43,7 +43,7 @@ const HomeScreen = ({navigation, route}) => {
               name: user.displayName,
               uid: user.uid,
               photo: user.photoURL,
-              roundCount: querySnapshot.docs[0].data().round - 1,
+              roundCount: querySnapshot.docs[0].data().roundCount,
             })
             .then(() => {
               navigation.navigate('GuessScreen', {
