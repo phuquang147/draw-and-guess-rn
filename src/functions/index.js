@@ -43,44 +43,9 @@ exports.listenToRoomStateChange = functions
             .get()
             .then(snapshot => {
               if (snapshot.docs[0].data().points >= endPoint) {
-                // Reset room
                 admin.firestore().collection('rooms').doc(roomId).update({
-                  currentMember: null,
-                  currentWord: null,
-                  correctCount: 0,
                   state: 'endGame',
                 });
-                // Reset members
-                admin
-                  .firestore()
-                  .collection('rooms')
-                  .doc(roomId)
-                  .collection('members')
-                  .get()
-                  .then(snapshot => {
-                    snapshot.docs.forEach(doc => {
-                      doc.ref.update({
-                        isCorrect: false,
-                        isChoosing: false,
-                        isDrawing: false,
-                        points: 0,
-                      });
-                    });
-                  });
-                // Reset words
-                admin
-                  .firestore()
-                  .collection('rooms')
-                  .doc(roomId)
-                  .collection('words')
-                  .get()
-                  .then(snapshot => {
-                    snapshot.docs.forEach(doc => {
-                      doc.ref.update({
-                        roundCount: 0,
-                      });
-                    });
-                  });
               } else {
                 admin.firestore().collection('rooms').doc(roomId).update({
                   state: 'choosing',
@@ -107,7 +72,43 @@ exports.listenToRoomStateChange = functions
 
         if (countDownTime <= 0) {
           clearInterval(interval);
+
+          // Reset members
+          admin
+            .firestore()
+            .collection('rooms')
+            .doc(roomId)
+            .collection('members')
+            .get()
+            .then(snapshot => {
+              snapshot.docs.forEach(doc => {
+                doc.ref.update({
+                  isCorrect: false,
+                  isChoosing: false,
+                  isDrawing: false,
+                  points: 0,
+                });
+              });
+            });
+          // Reset words
+          admin
+            .firestore()
+            .collection('rooms')
+            .doc(roomId)
+            .collection('words')
+            .get()
+            .then(snapshot => {
+              snapshot.docs.forEach(doc => {
+                doc.ref.update({
+                  roundCount: 0,
+                });
+              });
+            });
+          // Reset room
           admin.firestore().collection('rooms').doc(roomId).update({
+            currentMember: null,
+            currentWord: null,
+            correctCount: 0,
             state: 'choosing',
           });
         }
