@@ -12,7 +12,7 @@ const WordSelectionModal = ({wordRef, onSkip, onDraw}) => {
 
   useEffect(() => {
     wordRef?.get().then(value => setKeyWord(value.data().value));
-  }, []);
+  }, [wordRef]);
 
   useEffect(() => {
     setInterval(() => {
@@ -30,7 +30,7 @@ const WordSelectionModal = ({wordRef, onSkip, onDraw}) => {
         <View>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Đến lượt của bạn rồi đó!</Text>
-            <Text style={styles.keyWord}>{keyWord ?? 'CON CHÓ'}</Text>
+            <Text style={styles.keyWord}>{keyWord ?? '404'}</Text>
             <View style={styles.btnContainer}>
               <ThemedButton
                 name="bruce"

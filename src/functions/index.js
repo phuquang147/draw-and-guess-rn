@@ -97,7 +97,7 @@ exports.listenToRoomStateChange = functions
     if (oldRoomState !== newRoomState && newRoomState === 'endGame') {
       admin.database().ref(`/rooms/${roomId}-endGame`).set({remaining: 15000});
 
-      let countDownTime = 10000;
+      let countDownTime = 15000;
 
       // Countdown
       const interval = setInterval(() => {

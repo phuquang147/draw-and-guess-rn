@@ -23,6 +23,11 @@ import WordSelectionModal from '../components/WordSelectionModal';
 import CountDownProgressBar from '../components/GuessScreen/CountDownProgressBar';
 
 const renderDrawArea = (user, room, members) => {
+  const [keyWord, setKeyWord] = useState('');
+  useEffect(() => {
+    room?.currentWord?.get().then(value => setKeyWord(value.data().value));
+  }, [room?.currentWord]);
+
   const handleStartPlaying = async () => {
     firestore().collection('rooms').doc(room.id).update({
       state: 'choosing',
@@ -54,6 +59,13 @@ const renderDrawArea = (user, room, members) => {
             <Text style={styles.waitingText}>Vui lòng chờ...</Text>
           </View>
         );
+    }
+    if (room.state === 'endRound') {
+      return (
+        <View style={styles.startButtonWrapper}>
+          <Text style={styles.buttonText}>{keyWord}</Text>
+        </View>
+      );
     } else {
       if (user.isDrawing) {
         return (
@@ -257,7 +269,15 @@ const GuessScreen = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.drawContainer}>
+      <View
+        style={[
+          styles.drawContainer,
+          roomInfo?.state === 'waiting' ||
+          roomInfo?.state === 'choosing' ||
+          roomInfo?.state === 'skipping'
+            ? {marginBottom: 32}
+            : '',
+        ]}>
         <View style={styles.draw}>
           {renderDrawArea(userInRoom, roomInfo, members)}
         </View>
@@ -272,12 +292,16 @@ const GuessScreen = ({navigation, route}) => {
         </View>
       </View>
 
-      {roomInfo?.state === 'playing' && (
-        <CountDownProgressBar
-          roomId={roomId}
-          roundCount={roomInfo?.roundCount}
-        />
-      )}
+      {roomInfo?.state &&
+        roomInfo?.state !== 'waiting' &&
+        roomInfo?.state !== 'choosing' &&
+        roomInfo?.state !== 'skipping' && (
+          <CountDownProgressBar
+            roomId={roomId}
+            roundCount={roomInfo?.roundCount}
+            state={roomInfo?.state}
+          />
+        )}
       <View style={styles.chatContainer}>
         <View style={styles.players}>
           <FlatList

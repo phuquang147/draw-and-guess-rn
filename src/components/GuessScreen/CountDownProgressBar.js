@@ -3,35 +3,56 @@ import {useEffect, useState} from 'react';
 import * as Progress from 'react-native-progress';
 import {StyleSheet} from 'react-native';
 
-const CountDownProgressBar = ({roomId, roundCount}) => {
-  const [countDown, setCountDown] = useState(120000);
+const CountDownProgressBar = ({roomId, roundCount, state}) => {
+  console.log(state);
+
+  const [countDown, setCountDown] = useState(
+    state === 'playing' ? 120000 : state === 'endRound' ? 10000 : 15000,
+  );
 
   useEffect(() => {
-    const onValueChange = firebase
+    let refPath;
+    let onValueChange;
+
+    if (state === 'playing') {
+      refPath = `/rooms/${roomId}-${roundCount}`;
+      onValueChange = snapshot => {
+        if (snapshot.val()) setCountDown(snapshot.val().remaining);
+      };
+    } else if (state === 'endRound') {
+      refPath = `/rooms/${roomId}-endRound`;
+      onValueChange = snapshot => {
+        if (snapshot.val()) setCountDown(snapshot.val().remaining);
+      };
+    } else {
+      refPath = `/rooms/${roomId}-endGame`;
+      onValueChange = snapshot => {
+        if (snapshot.val()) setCountDown(snapshot.val().remaining);
+      };
+    }
+
+    const databaseRef = firebase
       .app()
       .database(
         'https://drawandguessgame-default-rtdb.asia-southeast1.firebasedatabase.app/',
       )
-      .ref(`/rooms/${roomId}-${roundCount}`)
-      .on('value', snapshot => {
-        console.log(snapshot.val());
-        if (snapshot.val()) setCountDown(snapshot.val().remaining);
-      });
+      .ref(refPath);
+
+    const valueListener = databaseRef.on('value', onValueChange);
 
     return () => {
-      firebase
-        .app()
-        .database(
-          'https://drawandguessgame-default-rtdb.asia-southeast1.firebasedatabase.app/',
-        )
-        .ref(`/rooms/${roomId}`)
-        .off('value', onValueChange);
+      databaseRef.off('value', valueListener);
     };
-  }, []);
-  //   console.log(countDown);
+  }, [state]);
   return (
     <Progress.Bar
-      progress={countDown / 120000}
+      progress={
+        state === 'playing'
+          ? countDown / 120000
+          : state === 'endRound'
+          ? countDown / 10000
+          : countDown / 15000
+      }
       style={styles.progress}
       animationType="timing"
       height={16}
