@@ -33,7 +33,6 @@ exports.listenToRoomStateChange = functions
 
         if (countDownTime <= 0) {
           clearInterval(interval);
-
           admin
             .firestore()
             .collection('rooms')
@@ -48,7 +47,6 @@ exports.listenToRoomStateChange = functions
                 admin.firestore().collection('rooms').doc(roomId).update({
                   currentMember: null,
                   currentWord: null,
-                  roundCount: 0,
                   correctCount: 0,
                   state: 'endGame',
                 });
@@ -66,7 +64,6 @@ exports.listenToRoomStateChange = functions
                         isChoosing: false,
                         isDrawing: false,
                         points: 0,
-                        roundCount: 0,
                       });
                     });
                   });
@@ -114,14 +111,11 @@ exports.listenToRoomStateChange = functions
             state: 'choosing',
           });
         }
-      });
+      }, 1000);
     }
 
     // Khi room state chuyển qua choosing
-    if (
-      oldRoomState !== newRoomState &&
-      (newRoomState === 'choosing' || newRoomState === 'skipping')
-    ) {
+    if (oldRoomState !== newRoomState && newRoomState === 'choosing') {
       // Chọn từ tiếp theo
       admin
         .firestore()
@@ -170,6 +164,13 @@ exports.listenToRoomStateChange = functions
             isChoosing: true,
           });
         });
+    }
+
+    //skipping trường hợp
+    if (oldRoomState !== newRoomState && newRoomState === 'skipping') {
+      admin.firestore().collection('rooms').doc(roomId).update({
+        state: 'choosing',
+      });
     }
 
     const resetData = () => {

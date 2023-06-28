@@ -66,6 +66,20 @@ const renderDrawArea = (user, room, members) => {
           <Text style={styles.buttonText}>{keyWord}</Text>
         </View>
       );
+    }
+    if (room.state === 'skipping') {
+      return (
+        <View style={styles.startButtonWrapper}>
+          <Text style={styles.buttonText}>Bỏ lượt ???</Text>
+        </View>
+      );
+    }
+    if (room.state === 'endGame') {
+      return (
+        <View style={styles.startButtonWrapper}>
+          <Text style={styles.buttonText}>END CMN GAME</Text>
+        </View>
+      );
     } else {
       if (user.isDrawing) {
         return (
