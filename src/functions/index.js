@@ -189,14 +189,9 @@ exports.listenToRoomStateChange = functions
           });
         });
       // Cập nhật trạng thái phòng
-      admin
-        .firestore()
-        .collection('rooms')
-        .doc(roomId)
-        .update({
-          state: 'endRound',
-          roundCount: admin.firestore.FieldValue.increment(1),
-        });
+      admin.firestore().collection('rooms').doc(roomId).update({
+        state: 'endRound',
+      });
     };
 
     // Khi phòng chuyển qua trạng thái playing
