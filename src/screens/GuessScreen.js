@@ -10,7 +10,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import * as Progress from 'react-native-progress';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Feathericon from 'react-native-vector-icons/Feather';
@@ -21,6 +20,7 @@ import colors from '../assets/colors';
 import Answer from '../components/Answer';
 import Player from '../components/Player';
 import WordSelectionModal from '../components/WordSelectionModal';
+import CountDownProgressBar from '../components/GuessScreen/CountDownProgressBar';
 
 const renderDrawArea = (user, room, members) => {
   const handleStartPlaying = async () => {
@@ -272,17 +272,12 @@ const GuessScreen = ({navigation, route}) => {
         </View>
       </View>
 
-      <Progress.Bar
-        progress={1}
-        style={styles.progress}
-        animationType="timing"
-        height={16}
-        borderRadius={20}
-        borderColor="#fff"
-        color="#fc8aff"
-        unfilledColor="#6d45e7"
-        width={null}
-      />
+      {roomInfo?.state === 'playing' && (
+        <CountDownProgressBar
+          roomId={roomId}
+          roundCount={roomInfo?.roundCount}
+        />
+      )}
       <View style={styles.chatContainer}>
         <View style={styles.players}>
           <FlatList
@@ -373,10 +368,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     top: 12,
     right: 12,
-  },
-  progress: {
-    height: 16,
-    marginVertical: 8,
   },
   chatContainer: {
     flex: 0.6,
