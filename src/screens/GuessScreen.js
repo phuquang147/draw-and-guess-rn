@@ -24,11 +24,27 @@ import WordSelectionModal from '../components/WordSelectionModal';
 import CountDownProgressBar from '../components/GuessScreen/CountDownProgressBar';
 
 const renderDrawArea = (user, room, members) => {
-  const [players, setPlayers] =useState([]);
+  const [players, setPlayers] = useState([]);
   const [keyWord, setKeyWord] = useState('');
   useEffect(() => {
     room?.currentWord?.get().then(value => setKeyWord(value.data().value));
   }, [room?.currentWord]);
+
+  useEffect(() => {
+    if (room?.state === 'endGame') {
+      firestore()
+        .collection('rooms')
+        .doc(room.id)
+        .collection('members')
+        .orderBy('points', 'desc')
+        .limit(3)
+        .get()
+        .then(snapshot => {
+          setPlayers(snapshot.docs.map(item => item.data()));
+          // players.push(snapshot.docs.data())
+        });
+    }
+  }, [room?.state]);
 
   const handleStartPlaying = async () => {
     firestore().collection('rooms').doc(room.id).update({
@@ -77,20 +93,9 @@ const renderDrawArea = (user, room, members) => {
       );
     }
     if (room.state === 'endGame') {
-      firestore()
-            .collection('rooms')
-            .doc(room.id)
-            .collection('members')
-            .orderBy('points', 'desc')
-            .limit(3)
-            .get()
-            .then(snapshot => {
-              setPlayers(snapshot.docs.map(item => item.data()));
-             // players.push(snapshot.docs.data())
-            })
       return (
         <View style={styles.startButtonWrapper}>
-          <GameOverRanking players={players}/>
+          <GameOverRanking players={players} />
         </View>
       );
     } else {
@@ -208,24 +213,24 @@ const GuessScreen = ({navigation, route}) => {
   }, [userInRoom]);
 
   const handleSkip = () => {
-    firestore().collection('rooms').doc(roomId).update({state: 'skipping'});
     firestore()
       .collection('rooms')
       .doc(roomId)
       .collection('members')
       .doc(userInRoom.uid)
       .update({isChoosing: false});
+    firestore().collection('rooms').doc(roomId).update({state: 'skipping'});
     setWordSelectionModalVisible(false);
   };
 
   const handleDraw = () => {
-    firestore().collection('rooms').doc(roomId).update({state: 'playing'});
     firestore()
       .collection('rooms')
       .doc(roomId)
       .collection('members')
       .doc(userInRoom.uid)
       .update({isChoosing: false, isDrawing: true});
+    firestore().collection('rooms').doc(roomId).update({state: 'playing'});
     setWordSelectionModalVisible(false);
   };
 

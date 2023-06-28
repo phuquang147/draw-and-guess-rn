@@ -1,7 +1,7 @@
 import {View, Text, Image, StyleSheet} from 'react-native';
 
 const GameOverRanking = ({players}) => {
-  console.log("players", players)
+  console.log(players)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Game over</Text>
