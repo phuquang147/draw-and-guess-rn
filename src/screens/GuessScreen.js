@@ -19,10 +19,12 @@ import {stringSimilarity} from 'string-similarity-js';
 import colors from '../assets/colors';
 import Answer from '../components/Answer';
 import Player from '../components/Player';
+import GameOverRanking from '../components/GameOverRanking';
 import WordSelectionModal from '../components/WordSelectionModal';
 import CountDownProgressBar from '../components/GuessScreen/CountDownProgressBar';
 
 const renderDrawArea = (user, room, members) => {
+  const [players, setPlayers] =useState([]);
   const [keyWord, setKeyWord] = useState('');
   useEffect(() => {
     room?.currentWord?.get().then(value => setKeyWord(value.data().value));
@@ -75,9 +77,20 @@ const renderDrawArea = (user, room, members) => {
       );
     }
     if (room.state === 'endGame') {
+      firestore()
+            .collection('rooms')
+            .doc(room.id)
+            .collection('members')
+            .orderBy('points', 'desc')
+            .limit(3)
+            .get()
+            .then(snapshot => {
+              setPlayers(snapshot.docs.map(item => item.data()));
+             // players.push(snapshot.docs.data())
+            })
       return (
         <View style={styles.startButtonWrapper}>
-          <Text style={styles.buttonText}>END CMN GAME</Text>
+          <GameOverRanking players={players}/>
         </View>
       );
     } else {
