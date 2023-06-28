@@ -152,10 +152,7 @@ exports.listenToRoomStateChange = functions
             .doc(roomId)
             .update({
               currentMember: snapshot.docs[0].ref,
-              roundCount: Math.max(
-                newRoundCount,
-                snapshot.docs[0].data().roundCount + 1,
-              ),
+              roundCount: admin.firestore.FieldValue.increment(1),
               correctCount: 0,
             });
           // Cập nhật member
