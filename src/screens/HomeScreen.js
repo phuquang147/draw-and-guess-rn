@@ -33,23 +33,31 @@ const HomeScreen = ({navigation, route}) => {
         if (querySnapshot.docs.length > 0) {
           querySnapshot.docs[0].ref
             .collection('members')
-            .doc(user.uid)
-            .set({
-              isHost: false,
-              isChoosing: false,
-              isCorrect: false,
-              isDrawing: false,
-              points: 0,
-              name: user.displayName,
-              uid: user.uid,
-              photo: user.photoURL,
-              roundCount: querySnapshot.docs[0].data().roundCount,
-            })
-            .then(() => {
-              navigation.navigate('GuessScreen', {
-                roomId: querySnapshot.docs[0].id,
-                user,
-              });
+            .orderBy('roundCount', 'asc')
+            .limit(1)
+            .get()
+            .then(snapshot => {
+              querySnapshot.docs[0].ref
+                .collection('members')
+                .doc(user.uid)
+                .set({
+                  isHost: false,
+                  isChoosing: false,
+                  isCorrect: false,
+                  isDrawing: false,
+                  isOnline: true,
+                  points: 0,
+                  name: user.displayName,
+                  uid: user.uid,
+                  photo: user.photoURL,
+                  roundCount: snapshot.docs[0].data().roundCount,
+                })
+                .then(() => {
+                  navigation.navigate('GuessScreen', {
+                    roomId: querySnapshot.docs[0].id,
+                    user,
+                  });
+                });
             });
         } else Alert.alert('Không còn phòng trống! Vui lòng tạo phòng mới');
       });

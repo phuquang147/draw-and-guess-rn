@@ -73,6 +73,7 @@ const CreateRoomScreen = ({navigation, route}) => {
                 isCorrect: false,
                 isDrawing: false,
                 isChoosing: false,
+                isOnline: true,
                 points: 0,
                 name: user.displayName,
                 uid: user.uid,

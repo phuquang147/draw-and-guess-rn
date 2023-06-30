@@ -18,10 +18,10 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import {stringSimilarity} from 'string-similarity-js';
 import colors from '../assets/colors';
 import Answer from '../components/Answer';
-import Player from '../components/Player';
 import GameOverRanking from '../components/GameOverRanking';
-import WordSelectionModal from '../components/WordSelectionModal';
 import CountDownProgressBar from '../components/GuessScreen/CountDownProgressBar';
+import Player from '../components/Player';
+import WordSelectionModal from '../components/WordSelectionModal';
 
 const renderDrawArea = (user, room, members) => {
   const [players, setPlayers] = useState([]);
@@ -210,7 +210,57 @@ const GuessScreen = ({navigation, route}) => {
 
   useEffect(() => {
     if (userInRoom && userInRoom.isChoosing) setWordSelectionModalVisible(true);
+
+    // return () => {
+    //   console.log(userInRoom);
+    //   if (userInRoom && userInRoom?.isHost)
+    //     firestore()
+    //       .collection('rooms')
+    //       .doc(roomId)
+    //       .collection('members')
+    //       .where('uid', '!=', userInRoom.uid)
+    //       .limit(1)
+    //       .get(snapshot => {
+    //         console.log(snapshot.docs);
+    //         snapshot.docs[0].ref.update({isHost: true});
+    //       });
+
+    //   firestore()
+    //     .collection('rooms')
+    //     .doc(roomId)
+    //     .collection('members')
+    //     .doc(user.uid)
+    //     .delete();
+    // };
   }, [userInRoom]);
+
+  // useEffect(() => {
+  //   if (user) {
+  //     const reference = firebase
+  //       .app()
+  //       .database(
+  //         'https://drawandguessgame-default-rtdb.asia-southeast1.firebasedatabase.app/',
+  //       )
+  //       .ref(`/online/${user.uid}`);
+
+  //     reference.set(true);
+
+  //     reference.onDisconnect().set(false);
+  //   }
+  // }, [user]);
+  useEffect(() => {
+    return () => {
+      firestore()
+        .collection('rooms')
+        .doc(roomId)
+        .collection('members')
+        .doc(user.uid)
+        .get()
+        .then(member => {
+          member.ref.update({isOnline: false});
+        });
+    };
+  }, []);
 
   const handleSkip = () => {
     firestore()
