@@ -33,21 +33,20 @@ exports.listenToRoomStateChange = functions
 
         if (countDownTime <= 0) {
           clearInterval(interval);
+          // Kiểm tra nếu đủ điểm thắng thì endgame
           admin
             .firestore()
-            .collection('rooms')
-            .doc(roomId)
-            .collection('members')
+            .collection(`rooms/${roomId}/members`)
             .orderBy('points', 'desc')
             .limit(1)
             .get()
             .then(snapshot => {
               if (snapshot.docs[0].data().points >= endPoint) {
-                admin.firestore().collection('rooms').doc(roomId).update({
+                admin.firestore().doc(`rooms/${roomId}`).update({
                   state: 'endGame',
                 });
               } else {
-                admin.firestore().collection('rooms').doc(roomId).update({
+                admin.firestore().doc(`rooms/${roomId}`).update({
                   state: 'choosing',
                 });
               }
@@ -76,9 +75,7 @@ exports.listenToRoomStateChange = functions
           // Reset members
           admin
             .firestore()
-            .collection('rooms')
-            .doc(roomId)
-            .collection('members')
+            .collection(`rooms/${roomId}/members`)
             .get()
             .then(snapshot => {
               snapshot.docs.forEach(doc => {
@@ -120,15 +117,13 @@ exports.listenToRoomStateChange = functions
       // Chọn từ tiếp theo
       admin
         .firestore()
-        .collection('rooms')
-        .doc(roomId)
-        .collection('words')
+        .collection(`rooms/${roomId}/words`)
         .orderBy('roundCount')
         .limit(1)
         .get()
         .then(snapshot => {
           // Cập nhật thông tin phòng
-          admin.firestore().collection('rooms').doc(roomId).update({
+          admin.firestore().doc(`rooms/${roomId}`).update({
             currentWord: snapshot.docs[0].ref,
           });
           // Cập nhật từ
@@ -139,9 +134,7 @@ exports.listenToRoomStateChange = functions
       // Chọn người vẽ tiếp theo
       admin
         .firestore()
-        .collection('rooms')
-        .doc(roomId)
-        .collection('members')
+        .collection(`rooms/${roomId}/members`)
         .orderBy('roundCount')
         .limit(1)
         .get()
@@ -149,8 +142,7 @@ exports.listenToRoomStateChange = functions
           // Cập nhật thông tin phòng
           admin
             .firestore()
-            .collection('rooms')
-            .doc(roomId)
+            .doc(`rooms/${roomId}`)
             .update({
               currentMember: snapshot.docs[0].ref,
               roundCount: admin.firestore.FieldValue.increment(1),
@@ -166,18 +158,16 @@ exports.listenToRoomStateChange = functions
 
     //skipping trường hợp
     if (oldRoomState !== newRoomState && newRoomState === 'skipping') {
-      admin.firestore().collection('rooms').doc(roomId).update({
+      admin.firestore().doc(`rooms/${roomId}`).update({
         state: 'choosing',
       });
     }
 
-    const resetData = () => {
+    const resetMembers = () => {
       // Reset thông tin của member
       admin
         .firestore()
-        .collection('rooms')
-        .doc(roomId)
-        .collection('members')
+        .collection(`rooms/${roomId}/members`)
         .get()
         .then(snapshot => {
           snapshot.docs.forEach(doc => {
@@ -188,8 +178,12 @@ exports.listenToRoomStateChange = functions
             });
           });
         });
+    };
+
+    const resetData = () => {
+      resetMembers();
       // Cập nhật trạng thái phòng
-      admin.firestore().collection('rooms').doc(roomId).update({
+      admin.firestore().doc(`rooms/${roomId}`).update({
         state: 'endRound',
       });
     };
@@ -221,7 +215,13 @@ exports.listenToRoomStateChange = functions
               .then(snapshot => {
                 if (!snapshot.val()) {
                   clearInterval(interval);
-                  resetData();
+                  admin.firestore
+                    .doc(`rooms/${roomId}/members`)
+                    .count()
+                    .get()
+                    .then(snapshot => {
+                      if (snapshot.data().count >= 2) resetData();
+                    });
                 } else {
                   clearInterval(interval);
                 }
@@ -231,13 +231,21 @@ exports.listenToRoomStateChange = functions
       }, 1000);
     }
 
+    // Khi phòng chuyển qua trạng thái waiting
+    if (oldRoomState !== newRoomState && newRoomState === 'waiting') {
+      resetMembers();
+      // Reset phòng
+      admin.firestore().doc(`rooms/${roomId}`).update({
+        correctCount: 0,
+      });
+    }
+
     // Kiểm tra nếu tất cả các thành viên đều trả lời đúng
     if (oldCorrectCount !== newCorrectCount && newCorrectCount !== 0) {
       const collectionRef = admin
         .firestore()
-        .collection('rooms')
-        .doc(roomId)
-        .collection('members');
+        .collection(`rooms/${roomId}/members`);
+
       const snapshot = await collectionRef.count().get();
       if (newCorrectCount === snapshot.data().count - 1) {
         resetData();
@@ -245,4 +253,78 @@ exports.listenToRoomStateChange = functions
     }
 
     return null;
+  });
+
+exports.listenToMemberUpdate = functions
+  .region('asia-east2')
+  .firestore.document('rooms/{roomId}/members/{memberId}')
+  .onUpdate((change, context) => {
+    const {roomId, memberId} = context.params;
+    const oldIsOnline = change.before.get('isOnline');
+    const newIsOnline = change.after.get('isOnline');
+    const isHost = change.after.get('isHost');
+    const isDrawing = change.after.get('isDrawing');
+    const isChoosing = change.after.get('isChoosing');
+
+    if (oldIsOnline !== newIsOnline && !newIsOnline) {
+      if (isHost)
+        admin
+          .firestore()
+          .collection(`rooms/${roomId}/members`)
+          .where('uid', '!=', memberId)
+          .limit(1)
+          .get()
+          .then(snapshot => {
+            snapshot.docs[0].ref.update({isHost: true});
+          });
+
+      admin
+        .firestore()
+        .doc(`rooms/${roomId}/members/${memberId}`)
+        .delete()
+        .then(() => {
+          // Kiểm tra số lượng member để xóa room
+          admin
+            .firestore()
+            .collection(`rooms/${roomId}/members`)
+            .count()
+            .get()
+            .then(snapshot => {
+              if (snapshot.data().count === 0) {
+                admin
+                  .firestore()
+                  .collection(`rooms/${roomId}/words`)
+                  .get()
+                  .then(snapshot => {
+                    for (const doc of snapshot.docs) {
+                      doc.ref.delete();
+                    }
+                  });
+                admin
+                  .firestore()
+                  .collection(`rooms/${roomId}/answers`)
+                  .get()
+                  .then(snapshot => {
+                    for (const doc of snapshot.docs) {
+                      doc.ref.delete();
+                    }
+                  });
+                admin.firestore().doc(`rooms/${roomId}`).delete();
+              } else if (snapshot.data().count === 1) {
+                admin
+                  .firestore()
+                  .doc(`rooms/${roomId}`)
+                  .update({state: 'waiting'});
+              } else {
+                // Nếu member đang chọn từ hoặc vẽ thì chuyển thành skipping
+                if (isDrawing || isChoosing) {
+                  admin
+                    .firestore()
+                    .doc(`rooms/${roomId}`)
+                    .update({state: 'skipping'});
+                }
+              }
+            });
+        });
+    }
   });
