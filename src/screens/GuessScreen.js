@@ -26,6 +26,11 @@ import WordSelectionModal from '../components/WordSelectionModal';
 const renderDrawArea = (user, room, members) => {
   const [players, setPlayers] = useState([]);
   const [keyWord, setKeyWord] = useState('');
+
+  const cleanScreen = value => {
+    value.room.cleanScene(true);
+  };
+
   useEffect(() => {
     room?.currentWord?.get().then(value => setKeyWord(value.data().value));
   }, [room?.currentWord]);
@@ -112,6 +117,9 @@ const renderDrawArea = (user, room, members) => {
               roomToken: room.roomToken,
             }}
             style={styles.canvas}
+            joinRoomSuccessCallback={FastRoomObject =>
+              cleanScreen(FastRoomObject)
+            }
           />
         );
       } else

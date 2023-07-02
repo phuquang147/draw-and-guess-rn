@@ -4,8 +4,6 @@ import * as Progress from 'react-native-progress';
 import {StyleSheet} from 'react-native';
 
 const CountDownProgressBar = ({roomId, roundCount, state}) => {
-  console.log(state);
-
   const [countDown, setCountDown] = useState(
     state === 'playing' ? 120000 : state === 'endRound' ? 10000 : 15000,
   );
