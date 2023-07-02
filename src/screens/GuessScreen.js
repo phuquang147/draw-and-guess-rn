@@ -23,9 +23,14 @@ import CountDownProgressBar from '../components/GuessScreen/CountDownProgressBar
 import Player from '../components/Player';
 import WordSelectionModal from '../components/WordSelectionModal';
 
-const renderDrawArea = (user, room, members) => {
+const renderDrawArea = (user, room, members, setFastBoardRoom) => {
   const [players, setPlayers] = useState([]);
   const [keyWord, setKeyWord] = useState('');
+
+  const cleanScreen = value => {
+    setFastBoardRoom(value?.room);
+  };
+
   useEffect(() => {
     room?.currentWord?.get().then(value => setKeyWord(value.data().value));
   }, [room?.currentWord]);
@@ -112,6 +117,9 @@ const renderDrawArea = (user, room, members) => {
               roomToken: room.roomToken,
             }}
             style={styles.canvas}
+            joinRoomSuccessCallback={FastRoomObject =>
+              cleanScreen(FastRoomObject)
+            }
           />
         );
       } else
@@ -144,6 +152,7 @@ const GuessScreen = ({navigation, route}) => {
   const [userInRoom, setUserInRoom] = useState(null);
   const [wordSelectionModalVisible, setWordSelectionModalVisible] =
     useState(false);
+  const [fastBoardRoom, setFastBoardRoom] = useState();
 
   useEffect(() => {
     let unsubscribeRoom = () => {};
@@ -274,6 +283,7 @@ const GuessScreen = ({navigation, route}) => {
   };
 
   const handleDraw = () => {
+    fastBoardRoom.cleanScene(true);
     firestore()
       .collection('rooms')
       .doc(roomId)
@@ -361,7 +371,7 @@ const GuessScreen = ({navigation, route}) => {
             : '',
         ]}>
         <View style={styles.draw}>
-          {renderDrawArea(userInRoom, roomInfo, members)}
+          {renderDrawArea(userInRoom, roomInfo, members, setFastBoardRoom)}
         </View>
         <View style={styles.tools}>
           <Ionicon name="settings-outline" size={28} color="#4cdafe" />
