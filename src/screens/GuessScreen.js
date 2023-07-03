@@ -22,7 +22,7 @@ import GameOverRanking from '../components/GameOverRanking';
 import CountDownProgressBar from '../components/GuessScreen/CountDownProgressBar';
 import Player from '../components/Player';
 import WordSelectionModal from '../components/WordSelectionModal';
-import socket from '../services/socket';
+import {io} from 'socket.io-client';
 
 const renderDrawArea = (user, room, members) => {
   const [players, setPlayers] = useState([]);
@@ -156,11 +156,20 @@ const GuessScreen = ({navigation, route}) => {
     useState(false);
 
   useEffect(() => {
+    const socket = io('http://192.168.1.9:3000', {
+      autoConnect: false,
+      query: `userId=${user.uid}&roomId=${roomId}`,
+    });
+
     try {
       socket.connect();
     } catch (err) {
       console.log(err);
     }
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -251,34 +260,6 @@ const GuessScreen = ({navigation, route}) => {
     //     .delete();
     // };
   }, [userInRoom]);
-
-  // useEffect(() => {
-  //   if (user) {
-  //     const reference = firebase
-  //       .app()
-  //       .database(
-  //         'https://drawandguessgame-default-rtdb.asia-southeast1.firebasedatabase.app/',
-  //       )
-  //       .ref(`/online/${user.uid}`);
-
-  //     reference.set(true);
-
-  //     reference.onDisconnect().set(false);
-  //   }
-  // }, [user]);
-  useEffect(() => {
-    return () => {
-      firestore()
-        .collection('rooms')
-        .doc(roomId)
-        .collection('members')
-        .doc(user.uid)
-        .get()
-        .then(member => {
-          member.ref.update({isOnline: false});
-        });
-    };
-  }, []);
 
   const handleSkip = () => {
     firestore()
