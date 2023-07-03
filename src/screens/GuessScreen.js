@@ -27,8 +27,13 @@ const renderDrawArea = (user, room, members) => {
   const [players, setPlayers] = useState([]);
   const [keyWord, setKeyWord] = useState('');
 
-  const cleanScreen = value => {
+  const drawingBoard = value => {
     value.room.cleanScene(true);
+    console.log(value.room.getMemberState());
+  };
+
+  const viewBoard = value => {
+    value.room.setWritable(false);
   };
 
   useEffect(() => {
@@ -122,24 +127,27 @@ const renderDrawArea = (user, room, members) => {
               }}
               style={styles.canvas}
               joinRoomSuccessCallback={FastRoomObject =>
-                cleanScreen(FastRoomObject)
+                drawingBoard(FastRoomObject)
               }
             />
           </View>
         );
       } else
         return (
-          <WhiteboardView
-            sdkConfig={{
+          <FastRoom
+            sdkParams={{
               appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
               region: 'sg',
             }}
-            roomConfig={{
+            roomParams={{
               uid: user.uid,
               uuid: room.uuid,
               roomToken: room.roomToken,
             }}
             style={styles.canvas}
+            joinRoomSuccessCallback={FastRoomObject =>
+              viewBoard(FastRoomObject)
+            }
           />
         );
     }
