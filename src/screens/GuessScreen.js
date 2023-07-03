@@ -29,7 +29,7 @@ const renderDrawArea = (user, room, members) => {
 
   const drawingBoard = value => {
     value.room.cleanScene(true);
-    console.log(value.room.getMemberState());
+    console.log('abc', value.room.getMemberState());
   };
 
   const viewBoard = value => {
@@ -148,6 +148,11 @@ const renderDrawArea = (user, room, members) => {
             joinRoomSuccessCallback={FastRoomObject =>
               viewBoard(FastRoomObject)
             }
+            displayConfig={{
+              showApplianceTools: false,
+              showRedoUndo: false,
+              showPageIndicator: false,
+            }}
           />
         );
     }
