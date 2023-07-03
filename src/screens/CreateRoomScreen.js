@@ -68,29 +68,34 @@ const CreateRoomScreen = ({navigation, route}) => {
               roundCount: 0,
             })
             .then(room => {
-              room.collection('members').doc(user.uid).set({
-                isHost: true,
-                isCorrect: false,
-                isDrawing: false,
-                isChoosing: false,
-                isOnline: true,
-                points: 0,
-                name: user.displayName,
-                uid: user.uid,
-                photo: user.photoURL,
-                roundCount: 0,
-              });
+              firestore()
+                .doc(`users/${user.uid}`)
+                .get()
+                .then(userSnapshot => {
+                  room.collection('members').doc(user.uid).set({
+                    isHost: true,
+                    isCorrect: false,
+                    isDrawing: false,
+                    isChoosing: false,
+                    isOnline: true,
+                    points: 0,
+                    name: userSnapshot.data().name,
+                    uid: user.uid,
+                    photo: userSnapshot.data().photo,
+                    roundCount: 0,
+                  });
 
-              const batch = firestore().batch();
-              for (let word of topics[selectedTopic].words) {
-                batch.set(room.collection('words').doc(), {
-                  value: word,
-                  roundCount: 0,
+                  const batch = firestore().batch();
+                  for (let word of topics[selectedTopic].words) {
+                    batch.set(room.collection('words').doc(), {
+                      value: word,
+                      roundCount: 0,
+                    });
+                  }
+                  batch.commit().then(() => {
+                    navigation.navigate('GuessScreen', {roomId: room.id, user});
+                  });
                 });
-              }
-              batch.commit().then(() => {
-                navigation.navigate('GuessScreen', {roomId: room.id, user});
-              });
             });
         }
       }

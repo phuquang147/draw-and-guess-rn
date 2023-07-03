@@ -37,26 +37,33 @@ const HomeScreen = ({navigation, route}) => {
             .limit(1)
             .get()
             .then(snapshot => {
-              querySnapshot.docs[0].ref
-                .collection('members')
-                .doc(user.uid)
-                .set({
-                  isHost: false,
-                  isChoosing: false,
-                  isCorrect: false,
-                  isDrawing: false,
-                  isOnline: true,
-                  points: 0,
-                  name: user.displayName,
-                  uid: user.uid,
-                  photo: user.photoURL,
-                  roundCount: snapshot.docs[0].data().roundCount,
-                })
-                .then(() => {
-                  navigation.navigate('GuessScreen', {
-                    roomId: querySnapshot.docs[0].id,
-                    user,
-                  });
+              firestore()
+                .doc(`users/${user.uid}`)
+                .get()
+                .then(userSnapshot => {
+                  console.log(userSnapshot.data());
+                  querySnapshot.docs[0].ref
+                    .collection('members')
+                    .doc(user.uid)
+                    .set({
+                      isHost: false,
+                      isChoosing: false,
+                      isCorrect: false,
+                      isDrawing: false,
+                      isOnline: true,
+                      points: 0,
+                      name: userSnapshot.data().name,
+                      uid: user.uid,
+                      photo: userSnapshot.data().photo,
+                      roundCount: snapshot.docs[0].data().roundCount,
+                    })
+                    .then(() => {
+                      console.log('Asss');
+                      navigation.navigate('GuessScreen', {
+                        roomId: querySnapshot.docs[0].id,
+                        user,
+                      });
+                    });
                 });
             });
         } else Alert.alert('Không còn phòng trống! Vui lòng tạo phòng mới');
