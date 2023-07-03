@@ -36,6 +36,7 @@ const renderDrawArea = (user, room, members) => {
 
   const viewBoard = value => {
     value.room.setWritable(false);
+    value.room.disableCameraTransform(true);
   };
 
   useEffect(() => {
