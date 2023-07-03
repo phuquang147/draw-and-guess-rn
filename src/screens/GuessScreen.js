@@ -113,7 +113,7 @@ const renderDrawArea = (user, room, members) => {
         return (
           <View style={{flex: 1}}>
             <Text style={[styles.buttonText, {textAlign: 'center', py: 4}]}>
-              aaaa
+              {keyWord}
             </Text>
             <FastRoom
               sdkParams={{
