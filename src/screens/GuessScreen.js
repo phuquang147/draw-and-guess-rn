@@ -106,21 +106,26 @@ const renderDrawArea = (user, room, members) => {
     } else {
       if (user.isDrawing) {
         return (
-          <FastRoom
-            sdkParams={{
-              appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
-              region: 'sg',
-            }}
-            roomParams={{
-              uid: user.uid,
-              uuid: room.uuid,
-              roomToken: room.roomToken,
-            }}
-            style={styles.canvas}
-            joinRoomSuccessCallback={FastRoomObject =>
-              cleanScreen(FastRoomObject)
-            }
-          />
+          <View style={{flex: 1}}>
+            <Text style={[styles.buttonText, {textAlign: 'center', py: 4}]}>
+              aaaa
+            </Text>
+            <FastRoom
+              sdkParams={{
+                appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
+                region: 'sg',
+              }}
+              roomParams={{
+                uid: user.uid,
+                uuid: room.uuid,
+                roomToken: room.roomToken,
+              }}
+              style={styles.canvas}
+              joinRoomSuccessCallback={FastRoomObject =>
+                cleanScreen(FastRoomObject)
+              }
+            />
+          </View>
         );
       } else
         return (
@@ -367,11 +372,28 @@ const GuessScreen = ({navigation, route}) => {
           roomInfo?.state === 'skipping'
             ? {marginBottom: 32}
             : '',
+          userInRoom?.isDrawing
+            ? {
+                flex: 1,
+              }
+            : '',
         ]}>
-        <View style={styles.draw}>
+        <View
+          style={[
+            styles.draw,
+            userInRoom?.isDrawing
+              ? {
+                  width: '100%',
+                  height: '100%',
+                }
+              : {
+                  width: '100%',
+                  height: '100%',
+                },
+          ]}>
           {renderDrawArea(userInRoom, roomInfo, members)}
         </View>
-        <View style={styles.tools}>
+        {/* <View style={styles.tools}>
           <Ionicon name="settings-outline" size={28} color="#4cdafe" />
           <Feathericon name="alert-triangle" size={28} color="#cc0000" />
           <Ionicon
@@ -379,68 +401,72 @@ const GuessScreen = ({navigation, route}) => {
             size={28}
             color="#4cdafe"
           />
-        </View>
+        </View> */}
       </View>
 
-      {roomInfo?.state &&
-        roomInfo?.state !== 'waiting' &&
-        roomInfo?.state !== 'choosing' &&
-        roomInfo?.state !== 'skipping' && (
-          <CountDownProgressBar
-            roomId={roomId}
-            roundCount={roomInfo?.roundCount}
-            state={roomInfo?.state}
-          />
-        )}
-      <View style={styles.chatContainer}>
-        <View style={styles.players}>
-          <FlatList
-            style={styles.playerList}
-            data={members}
-            renderItem={({item}) => <Player player={item} />}
-            keyExtractor={item => item.id}
-            ItemSeparatorComponent={() => <View style={{height: 16}}></View>}
-          />
-        </View>
-        <View style={styles.chat}>
-          <FlatList
-            style={styles.chatList}
-            data={chats}
-            inverted={true}
-            renderItem={({item}) => <Answer answer={item} />}
-            keyExtractor={item => item.id}
-            ItemSeparatorComponent={() => <View style={{height: 6}}></View>}
-          />
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder={
-                roomInfo && roomInfo.state === 'playing'
-                  ? 'Nhập câu trả lời'
-                  : 'Vui lòng chờ...'
-              }
-              value={answer}
-              onChangeText={value => setAnswer(value)}
-              onEndEditing={handleSendMessage}
-              editable={
-                roomInfo &&
-                roomInfo.state === 'playing' &&
-                userInRoom &&
-                !userInRoom.isCorrect &&
-                !userInRoom.isDrawing
-              }
+      <View>
+        {roomInfo?.state &&
+          roomInfo?.state !== 'waiting' &&
+          roomInfo?.state !== 'choosing' &&
+          roomInfo?.state !== 'skipping' && (
+            <CountDownProgressBar
+              roomId={roomId}
+              roundCount={roomInfo?.roundCount}
+              state={roomInfo?.state}
             />
-            <Pressable
-              onPress={handleSendMessage}
-              disabled={
-                (roomInfo && roomInfo.state === 'waiting') ||
-                (userInRoom && userInRoom.isCorrect)
-              }>
-              <Icon name="send" color="#7b54ff" size={20} />
-            </Pressable>
+          )}
+      </View>
+      {!userInRoom?.isDrawing && (
+        <View style={styles.chatContainer}>
+          <View style={styles.players}>
+            <FlatList
+              style={styles.playerList}
+              data={members}
+              renderItem={({item}) => <Player player={item} />}
+              keyExtractor={item => item.id}
+              ItemSeparatorComponent={() => <View style={{height: 16}}></View>}
+            />
+          </View>
+          <View style={styles.chat}>
+            <FlatList
+              style={styles.chatList}
+              data={chats}
+              inverted={true}
+              renderItem={({item}) => <Answer answer={item} />}
+              keyExtractor={item => item.id}
+              ItemSeparatorComponent={() => <View style={{height: 6}}></View>}
+            />
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder={
+                  roomInfo && roomInfo.state === 'playing'
+                    ? 'Nhập câu trả lời'
+                    : 'Vui lòng chờ...'
+                }
+                value={answer}
+                onChangeText={value => setAnswer(value)}
+                onEndEditing={handleSendMessage}
+                editable={
+                  roomInfo &&
+                  roomInfo.state === 'playing' &&
+                  userInRoom &&
+                  !userInRoom.isCorrect &&
+                  !userInRoom.isDrawing
+                }
+              />
+              <Pressable
+                onPress={handleSendMessage}
+                disabled={
+                  (roomInfo && roomInfo.state === 'waiting') ||
+                  (userInRoom && userInRoom.isCorrect)
+                }>
+                <Icon name="send" color="#7b54ff" size={20} />
+              </Pressable>
+            </View>
           </View>
         </View>
-      </View>
+      )}
       {roomInfo?.currentWord && wordSelectionModalVisible && (
         <WordSelectionModal
           wordRef={roomInfo?.currentWord}
@@ -467,11 +493,10 @@ const styles = StyleSheet.create({
     flex: 0.4,
   },
   draw: {
-    position: 'absolute',
+    // position: 'absolute',
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
+
     borderRadius: 20,
     backgroundColor: '#fff',
   },
@@ -531,8 +556,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   canvas: {
-    width: '100%',
-    height: '100%',
+    flex: 1,
     container: {
       width: '100%',
       height: '100%',
