@@ -378,19 +378,7 @@ const GuessScreen = ({navigation, route}) => {
               }
             : '',
         ]}>
-        <View
-          style={[
-            styles.draw,
-            userInRoom?.isDrawing
-              ? {
-                  width: '100%',
-                  height: '100%',
-                }
-              : {
-                  width: '100%',
-                  height: '100%',
-                },
-          ]}>
+        <View style={styles.draw}>
           {renderDrawArea(userInRoom, roomInfo, members)}
         </View>
         {/* <View style={styles.tools}>
@@ -496,7 +484,8 @@ const styles = StyleSheet.create({
     // position: 'absolute',
     top: 0,
     left: 0,
-
+    width: '100%',
+    height: '100%',
     borderRadius: 20,
     backgroundColor: '#fff',
   },
@@ -558,8 +547,7 @@ const styles = StyleSheet.create({
   canvas: {
     flex: 1,
     container: {
-      width: '100%',
-      height: '100%',
+      flex: 1,
     },
   },
   waitingText: {
