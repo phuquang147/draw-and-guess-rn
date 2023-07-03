@@ -22,6 +22,7 @@ import GameOverRanking from '../components/GameOverRanking';
 import CountDownProgressBar from '../components/GuessScreen/CountDownProgressBar';
 import Player from '../components/Player';
 import WordSelectionModal from '../components/WordSelectionModal';
+import socket from '../services/socket';
 
 const renderDrawArea = (user, room, members) => {
   const [players, setPlayers] = useState([]);
@@ -150,8 +151,17 @@ const GuessScreen = ({navigation, route}) => {
   const [chats, setChats] = useState([]);
   const [answer, setAnswer] = useState('');
   const [userInRoom, setUserInRoom] = useState(null);
+
   const [wordSelectionModalVisible, setWordSelectionModalVisible] =
     useState(false);
+
+  useEffect(() => {
+    try {
+      socket.connect();
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
 
   useEffect(() => {
     let unsubscribeRoom = () => {};
