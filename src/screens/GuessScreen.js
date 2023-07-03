@@ -134,26 +134,28 @@ const renderDrawArea = (user, room, members) => {
         );
       } else
         return (
-          <FastRoom
-            sdkParams={{
-              appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
-              region: 'sg',
-            }}
-            roomParams={{
-              uid: user.uid,
-              uuid: room.uuid,
-              roomToken: room.roomToken,
-            }}
-            style={styles.canvas}
-            joinRoomSuccessCallback={FastRoomObject =>
-              viewBoard(FastRoomObject)
-            }
-            displayConfig={{
-              showApplianceTools: false,
-              showRedoUndo: false,
-              showPageIndicator: false,
-            }}
-          />
+          <View style={{flex: 0.45, backgroundColor: 'red'}}>
+            <FastRoom
+              sdkParams={{
+                appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
+                region: 'sg',
+              }}
+              roomParams={{
+                uid: user.uid,
+                uuid: room.uuid,
+                roomToken: room.roomToken,
+              }}
+              style={styles.guessCanvas}
+              joinRoomSuccessCallback={FastRoomObject =>
+                viewBoard(FastRoomObject)
+              }
+              displayConfig={{
+                showApplianceTools: false,
+                showRedoUndo: false,
+                showPageIndicator: false,
+              }}
+            />
+          </View>
         );
     }
   }
@@ -391,7 +393,15 @@ const GuessScreen = ({navigation, route}) => {
               }
             : '',
         ]}>
-        <View style={styles.draw}>
+        <View
+          style={[
+            styles.draw,
+            userInRoom?.isDrawing
+              ? {
+                  flexDirection: 'column',
+                }
+              : {flexDirection: 'row', justifyContent: 'center'},
+          ]}>
           {renderDrawArea(userInRoom, roomInfo, members)}
         </View>
         {/* <View style={styles.tools}>
@@ -558,6 +568,12 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   canvas: {
+    flex: 1,
+    container: {
+      flex: 1,
+    },
+  },
+  guessCanvas: {
     flex: 1,
     container: {
       flex: 1,
