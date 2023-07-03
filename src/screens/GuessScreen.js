@@ -27,6 +27,7 @@ import {io} from 'socket.io-client';
 const renderDrawArea = (user, room, members) => {
   const [players, setPlayers] = useState([]);
   const [keyWord, setKeyWord] = useState('');
+  const [currentMemberName, setCurrentMemberName] = useState('');
 
   const drawingBoard = value => {
     value.room.cleanScene(true);
@@ -36,6 +37,12 @@ const renderDrawArea = (user, room, members) => {
   const viewBoard = value => {
     value.room.setWritable(false);
   };
+
+  useEffect(() => {
+    room?.currentMember
+      ?.get()
+      .then(value => setCurrentMemberName(value.data().name));
+  }, [room?.currentMember]);
 
   useEffect(() => {
     room?.currentWord?.get().then(value => setKeyWord(value.data().value));
@@ -99,7 +106,10 @@ const renderDrawArea = (user, room, members) => {
     if (room.state === 'skipping') {
       return (
         <View style={styles.startButtonWrapper}>
-          <Text style={styles.buttonText}>Bỏ lượt ???</Text>
+          <Text
+            style={
+              styles.buttonText
+            }>{`${currentMemberName} đã bỏ lượt ???`}</Text>
         </View>
       );
     }
@@ -135,7 +145,7 @@ const renderDrawArea = (user, room, members) => {
         );
       } else
         return (
-          <View style={{flex: 0.45, backgroundColor: 'red'}}>
+          <View style={{flex: 0.45}}>
             <FastRoom
               sdkParams={{
                 appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
@@ -373,9 +383,7 @@ const GuessScreen = ({navigation, route}) => {
       <View
         style={[
           styles.drawContainer,
-          roomInfo?.state === 'waiting' ||
-          roomInfo?.state === 'choosing' ||
-          roomInfo?.state === 'skipping'
+          roomInfo?.state === 'waiting' || roomInfo?.state === 'choosing'
             ? {marginBottom: 32}
             : '',
           userInRoom?.isDrawing
@@ -409,8 +417,7 @@ const GuessScreen = ({navigation, route}) => {
       <View>
         {roomInfo?.state &&
           roomInfo?.state !== 'waiting' &&
-          roomInfo?.state !== 'choosing' &&
-          roomInfo?.state !== 'skipping' && (
+          roomInfo?.state !== 'choosing' && (
             <CountDownProgressBar
               roomId={roomId}
               roundCount={roomInfo?.roundCount}

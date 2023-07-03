@@ -4,7 +4,6 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React, {useEffect, useState} from 'react';
 import CreateRoomScreen from './src/screens/CreateRoomScreen';
-import DrawScreen from './src/screens/DrawScreen';
 import GuessScreen from './src/screens/GuessScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
@@ -68,11 +67,6 @@ function App() {
         <Stack.Screen
           name="GuessScreen"
           component={GuessScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="DrawScreen"
-          component={DrawScreen}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

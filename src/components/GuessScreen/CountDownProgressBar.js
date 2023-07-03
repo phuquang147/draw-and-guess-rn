@@ -5,7 +5,13 @@ import {StyleSheet} from 'react-native';
 
 const CountDownProgressBar = ({roomId, roundCount, state}) => {
   const [countDown, setCountDown] = useState(
-    state === 'playing' ? 120000 : state === 'endRound' ? 10000 : 15000,
+    state === 'playing'
+      ? 120000
+      : state === 'endRound'
+      ? 10000
+      : state === 'endGame'
+      ? 15000
+      : 5000,
   );
 
   useEffect(() => {
@@ -22,8 +28,13 @@ const CountDownProgressBar = ({roomId, roundCount, state}) => {
       onValueChange = snapshot => {
         if (snapshot.val()) setCountDown(snapshot.val().remaining);
       };
-    } else {
+    } else if (state === 'endGame') {
       refPath = `/rooms/${roomId}-endGame`;
+      onValueChange = snapshot => {
+        if (snapshot.val()) setCountDown(snapshot.val().remaining);
+      };
+    } else {
+      refPath = `/rooms/${roomId}-skipped`;
       onValueChange = snapshot => {
         if (snapshot.val()) setCountDown(snapshot.val().remaining);
       };
@@ -49,7 +60,9 @@ const CountDownProgressBar = ({roomId, roundCount, state}) => {
           ? countDown / 120000
           : state === 'endRound'
           ? countDown / 10000
-          : countDown / 15000
+          : state === 'endGame'
+          ? countDown / 15000
+          : countDown / 5000
       }
       style={styles.progress}
       animationType="timing"
