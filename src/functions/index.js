@@ -10,7 +10,6 @@ exports.listenToRoomStateChange = functions
     const roomId = context.params.roomId;
     const oldRoomState = change.before.get('state');
     const newRoomState = change.after.get('state');
-    const oldRoundCount = change.before.get('roundCount');
     const newRoundCount = change.after.get('roundCount');
     const oldCorrectCount = change.before.get('correctCount');
     const newCorrectCount = change.after.get('correctCount');
@@ -63,6 +62,7 @@ exports.listenToRoomStateChange = functions
                 });
               }
             });
+          admin.database().ref(`/rooms/${roomId}-endRound`).remove();
         }
       }, 1000);
     }
@@ -99,20 +99,6 @@ exports.listenToRoomStateChange = functions
                 });
               });
             });
-          // Reset words
-          admin
-            .firestore()
-            .collection('rooms')
-            .doc(roomId)
-            .collection('words')
-            .get()
-            .then(snapshot => {
-              snapshot.docs.forEach(doc => {
-                doc.ref.update({
-                  roundCount: 0,
-                });
-              });
-            });
           // Reset room
           admin.firestore().collection('rooms').doc(roomId).update({
             currentMember: null,
@@ -120,6 +106,7 @@ exports.listenToRoomStateChange = functions
             correctCount: 0,
             state: 'choosing',
           });
+          admin.database().ref(`/rooms/${roomId}-endGame`).remove();
         }
       }, 1000);
     }
@@ -170,9 +157,29 @@ exports.listenToRoomStateChange = functions
 
     //skipping trường hợp
     if (oldRoomState !== newRoomState && newRoomState === 'skipping') {
-      admin.firestore().doc(`rooms/${roomId}`).update({
-        state: 'choosing',
-      });
+      admin.database().ref(`/rooms/${roomId}-skipped`).set({remaining: 5000});
+
+      let countDownTime = 5000;
+
+      // Countdown
+      const interval = setInterval(() => {
+        countDownTime -= 1000;
+
+        admin
+          .database()
+          .ref(`/rooms/${roomId}-skipped`)
+          .set({remaining: countDownTime});
+
+        if (countDownTime <= 0) {
+          clearInterval(interval);
+
+          admin.firestore().doc(`rooms/${roomId}`).update({
+            state: 'choosing',
+          });
+
+          admin.database().ref(`/rooms/${roomId}-skipped`).remove();
+        }
+      }, 1000);
     }
 
     const resetMembers = () => {
@@ -219,25 +226,29 @@ exports.listenToRoomStateChange = functions
           .set({remaining: countDownTime});
 
         if (countDownTime <= 0) {
-          admin
-            .database()
-            .ref(`/rooms/${roomId}-${newRoundCount + 1}`)
-            .once('value')
-            .then(snapshot => {
-              if (!snapshot.val()) {
-                clearInterval(interval);
-                // admin.firestore
-                //   .doc(`rooms/${roomId}/members`)
-                //   .count()
-                //   .get()
-                //   .then(snapshot => {
-                //     if (snapshot.data().count >= 2) resetData();
-                //   });
-                resetData();
-              } else {
-                clearInterval(interval);
-              }
-            });
+          {
+            admin
+              .database()
+              .ref(`/rooms/${roomId}-${newRoundCount + 1}`)
+              .once('value')
+              .then(snapshot => {
+                if (!snapshot.val()) {
+                  clearInterval(interval);
+                  admin
+                    .firestore()
+                    .collection(`rooms/${roomId}/members`)
+                    .count()
+                    .get()
+                    .then(snapshot => {
+                      if (snapshot.data().count >= 2) resetData();
+                    });
+                } else {
+                  clearInterval(interval);
+                }
+              });
+
+            admin.database().ref(`/rooms/${roomId}-${newRoundCount}`).remove();
+          }
         }
       }, 1000);
     }
