@@ -31,12 +31,6 @@ const renderDrawArea = (user, room, members) => {
 
   const drawingBoard = value => {
     value.room.cleanScene(true);
-    console.log('abc', value.room.getMemberState());
-  };
-
-  const viewBoard = value => {
-    value.room.setWritable(false);
-    value.room.disableCameraTransform(true);
   };
 
   useEffect(() => {
@@ -158,9 +152,6 @@ const renderDrawArea = (user, room, members) => {
                 roomToken: room.roomToken,
               }}
               style={styles.guessCanvas}
-              joinRoomSuccessCallback={FastRoomObject =>
-                viewBoard(FastRoomObject)
-              }
               displayConfig={{
                 showApplianceTools: false,
                 showRedoUndo: false,
