@@ -35,10 +35,16 @@ exports.listenToRoomStateChange = functions
 
         if (countDownTime <= 0) {
           clearInterval(interval);
+
+          admin.firestore().doc(`rooms/${roomId}`).update({
+            canHint: true,
+          });
+
           currentWord.update({
             showHint: false,
             hintIndexes: [],
           });
+
           // Kiểm tra nếu đủ điểm thắng thì endgame
           admin
             .firestore()
@@ -191,7 +197,6 @@ exports.listenToRoomStateChange = functions
       // Cập nhật trạng thái phòng
       admin.firestore().doc(`rooms/${roomId}`).update({
         state: 'endRound',
-        canHint: true,
       });
     };
 
@@ -214,26 +219,25 @@ exports.listenToRoomStateChange = functions
           .set({remaining: countDownTime});
 
         if (countDownTime <= 0) {
-          {
-            admin
-              .database()
-              .ref(`/rooms/${roomId}-${newRoundCount + 1}`)
-              .once('value')
-              .then(snapshot => {
-                if (!snapshot.val()) {
-                  clearInterval(interval);
-                  admin.firestore
-                    .doc(`rooms/${roomId}/members`)
-                    .count()
-                    .get()
-                    .then(snapshot => {
-                      if (snapshot.data().count >= 2) resetData();
-                    });
-                } else {
-                  clearInterval(interval);
-                }
-              });
-          }
+          admin
+            .database()
+            .ref(`/rooms/${roomId}-${newRoundCount + 1}`)
+            .once('value')
+            .then(snapshot => {
+              if (!snapshot.val()) {
+                clearInterval(interval);
+                // admin.firestore
+                //   .doc(`rooms/${roomId}/members`)
+                //   .count()
+                //   .get()
+                //   .then(snapshot => {
+                //     if (snapshot.data().count >= 2) resetData();
+                //   });
+                resetData();
+              } else {
+                clearInterval(interval);
+              }
+            });
         }
       }, 1000);
     }
@@ -254,11 +258,13 @@ exports.listenToRoomStateChange = functions
         .collection(`rooms/${roomId}/members`);
 
       const snapshot = await collectionRef.count().get();
+
       if (canHint) {
         admin.firestore().doc(`rooms/${roomId}`).update({
           canHint: false,
         });
       }
+
       if (newCorrectCount === snapshot.data().count - 1) {
         resetData();
       }
