@@ -1,5 +1,4 @@
 /* eslint-disable react/react-in-jsx-scope */
-import {FastRoom, WhiteboardView} from '@netless/react-native-fastboard';
 import firestore from '@react-native-firebase/firestore';
 import {useEffect, useState} from 'react';
 import {
@@ -12,26 +11,23 @@ import {
 } from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import Feathericon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Ionicon from 'react-native-vector-icons/Ionicons';
+import {io} from 'socket.io-client';
 import {stringSimilarity} from 'string-similarity-js';
 import colors from '../assets/colors';
 import Answer from '../components/Answer';
 import GameOverRanking from '../components/GameOverRanking';
 import CountDownProgressBar from '../components/GuessScreen/CountDownProgressBar';
+import DrawArea from '../components/GuessScreen/DrawArea';
+import ViewDrawArea from '../components/GuessScreen/ViewDrawArea';
 import Player from '../components/Player';
 import WordSelectionModal from '../components/WordSelectionModal';
-import {io} from 'socket.io-client';
+import Hint from '../components/GuessScreen/Hint';
 
 const renderDrawArea = (user, room, members) => {
   const [players, setPlayers] = useState([]);
   const [keyWord, setKeyWord] = useState('');
   const [currentMemberName, setCurrentMemberName] = useState('');
-
-  const drawingBoard = value => {
-    value.room.cleanScene(true);
-  };
 
   useEffect(() => {
     room?.currentMember
@@ -40,7 +36,7 @@ const renderDrawArea = (user, room, members) => {
   }, [room?.currentMember]);
 
   useEffect(() => {
-    room?.currentWord?.get().then(value => setKeyWord(value.data().value));
+    room?.currentWord?.get().then(value => setKeyWord(value.data()));
   }, [room?.currentWord]);
 
   useEffect(() => {
@@ -94,7 +90,7 @@ const renderDrawArea = (user, room, members) => {
     if (room.state === 'endRound') {
       return (
         <View style={styles.startButtonWrapper}>
-          <Text style={styles.buttonText}>{keyWord}</Text>
+          <Text style={styles.buttonText}>{keyWord.value}</Text>
         </View>
       );
     }
@@ -118,46 +114,15 @@ const renderDrawArea = (user, room, members) => {
       if (user.isDrawing) {
         return (
           <View style={{flex: 1}}>
-            <Text style={[styles.buttonText, {textAlign: 'center', py: 4}]}>
-              {keyWord}
-            </Text>
-            <FastRoom
-              sdkParams={{
-                appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
-                region: 'sg',
-              }}
-              roomParams={{
-                uid: user.uid,
-                uuid: room.uuid,
-                roomToken: room.roomToken,
-              }}
-              style={styles.canvas}
-              joinRoomSuccessCallback={FastRoomObject =>
-                drawingBoard(FastRoomObject)
-              }
-            />
+            {room.currentWord && <Hint user={user} room={room} />}
+            <DrawArea user={user} room={room} />
           </View>
         );
       } else
         return (
           <View style={{flex: 0.45}}>
-            <FastRoom
-              sdkParams={{
-                appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
-                region: 'sg',
-              }}
-              roomParams={{
-                uid: user.uid,
-                uuid: room.uuid,
-                roomToken: room.roomToken,
-              }}
-              style={styles.guessCanvas}
-              displayConfig={{
-                showApplianceTools: false,
-                showRedoUndo: false,
-                showPageIndicator: false,
-              }}
-            />
+            {room.currentWord && <Hint user={user} room={room} />}
+            <ViewDrawArea user={user} room={room} />
           </View>
         );
     }
@@ -178,7 +143,7 @@ const GuessScreen = ({navigation, route}) => {
     useState(false);
 
   useEffect(() => {
-    const socket = io('http://192.168.1.9:3000', {
+    const socket = io('https://draw-and-guess-server-qawt.onrender.com:3000', {
       autoConnect: false,
       query: `userId=${user.uid}&roomId=${roomId}`,
     });
@@ -557,19 +522,11 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: '#333',
   },
-  canvas: {
-    flex: 1,
-    container: {
-      flex: 1,
-    },
-  },
-  guessCanvas: {
-    flex: 1,
-    container: {
-      flex: 1,
-    },
-  },
   waitingText: {
     fontSize: 18,
+  },
+  text: {
+    fontFamily: 'icielPony',
+    fontSize: 20,
   },
 });

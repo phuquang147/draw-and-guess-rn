@@ -15,6 +15,8 @@ exports.listenToRoomStateChange = functions
     const oldCorrectCount = change.before.get('correctCount');
     const newCorrectCount = change.after.get('correctCount');
     const endPoint = change.after.get('endPoint');
+    const canHint = change.after.get('canHint');
+    const currentWord = change.after.get('currentWord');
 
     // Kiểm tra kết thúc game
     if (oldRoomState !== newRoomState && newRoomState === 'endRound') {
@@ -33,6 +35,10 @@ exports.listenToRoomStateChange = functions
 
         if (countDownTime <= 0) {
           clearInterval(interval);
+          currentWord.update({
+            showHint: false,
+            hintIndexes: [],
+          });
           // Kiểm tra nếu đủ điểm thắng thì endgame
           admin
             .firestore()
@@ -185,6 +191,7 @@ exports.listenToRoomStateChange = functions
       // Cập nhật trạng thái phòng
       admin.firestore().doc(`rooms/${roomId}`).update({
         state: 'endRound',
+        canHint: true,
       });
     };
 
@@ -247,6 +254,11 @@ exports.listenToRoomStateChange = functions
         .collection(`rooms/${roomId}/members`);
 
       const snapshot = await collectionRef.count().get();
+      if (canHint) {
+        admin.firestore().doc(`rooms/${roomId}`).update({
+          canHint: false,
+        });
+      }
       if (newCorrectCount === snapshot.data().count - 1) {
         resetData();
       }

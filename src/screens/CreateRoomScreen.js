@@ -66,6 +66,7 @@ const CreateRoomScreen = ({navigation, route}) => {
               currentMember: null, // docRef
               state: 'waiting', // waiting | choosing | drawing
               roundCount: 0,
+              canHint: true,
             })
             .then(room => {
               firestore()
@@ -90,6 +91,8 @@ const CreateRoomScreen = ({navigation, route}) => {
                     batch.set(room.collection('words').doc(), {
                       value: word,
                       roundCount: 0,
+                      showHint: false,
+                      hintIndexes: [],
                     });
                   }
                   batch.commit().then(() => {
