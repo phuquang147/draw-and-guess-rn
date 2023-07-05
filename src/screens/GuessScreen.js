@@ -22,11 +22,10 @@ import DrawArea from '../components/GuessScreen/DrawArea';
 import ViewDrawArea from '../components/GuessScreen/ViewDrawArea';
 import Player from '../components/Player';
 import WordSelectionModal from '../components/WordSelectionModal';
-import Hint from '../components/GuessScreen/Hint';
 
 const renderDrawArea = (user, room, members) => {
   const [players, setPlayers] = useState([]);
-  const [keyWord, setKeyWord] = useState('');
+  const [word, setWord] = useState();
   const [currentMemberName, setCurrentMemberName] = useState('');
 
   useEffect(() => {
@@ -36,7 +35,15 @@ const renderDrawArea = (user, room, members) => {
   }, [room?.currentMember]);
 
   useEffect(() => {
-    room?.currentWord?.get().then(value => setKeyWord(value.data()));
+    let unsubscribeWord = () => {};
+    if (room?.currentWord) {
+      unsubscribeWord = room?.currentWord?.onSnapshot(snapshot => {
+        setWord(snapshot.data());
+      });
+    }
+    return () => {
+      unsubscribeWord();
+    };
   }, [room?.currentWord]);
 
   useEffect(() => {
@@ -61,6 +68,36 @@ const renderDrawArea = (user, room, members) => {
     });
   };
 
+  const handleHint = () => {
+    if (room.canHint) {
+      room.currentWord?.get().then(value => {
+        const word = value.data();
+
+        if (!word.showHint) {
+          room.currentWord.update({
+            showHint: true,
+          });
+        } else {
+          const hintIndexes = [...word.hintIndexes];
+
+          if (hintIndexes.length < 2) {
+            let hintIndex = -1;
+            while (hintIndex === -1) {
+              const random = Math.floor(Math.random() * word.value.length);
+
+              if (!hintIndexes.includes(random) && word.value[random] !== ' ')
+                hintIndex = random;
+            }
+            hintIndexes.push(hintIndex);
+            room.currentWord.update({
+              hintIndexes,
+            });
+          }
+        }
+      });
+    }
+  };
+
   if (user && room) {
     if (room.state === 'waiting') {
       if (user.isHost)
@@ -83,14 +120,14 @@ const renderDrawArea = (user, room, members) => {
       else
         return (
           <View style={styles.startButtonWrapper}>
-            <Text style={styles.waitingText}>Vui lòng chờ...</Text>
+            <Text style={styles.buttonText}>Vui lòng chờ...</Text>
           </View>
         );
     }
     if (room.state === 'endRound') {
       return (
         <View style={styles.startButtonWrapper}>
-          <Text style={styles.buttonText}>{keyWord.value}</Text>
+          <Text style={styles.buttonText}>{word?.value}</Text>
         </View>
       );
     }
@@ -114,15 +151,91 @@ const renderDrawArea = (user, room, members) => {
       if (user.isDrawing) {
         return (
           <View style={{flex: 1}}>
-            {room.currentWord && <Hint user={user} room={room} />}
-            <DrawArea user={user} room={room} />
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                zIndex: 1,
+              }}>
+              {room.currentWord &&
+                word.value.split('').map((letter, index) => (
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      word.showHint ? {textDecorationLine: 'underline'} : '',
+                      word.hintIndexes.includes(index) ? {color: 'green'} : '',
+                    ]}
+                    key={`${letter}${Math.random()}`}>
+                    {letter}
+                  </Text>
+                ))}
+            </View>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: 'transparent',
+              }}>
+              <DrawArea user={user} room={room} />
+            </View>
+            <View
+              style={{position: 'absolute', bottom: 10, left: 10, zIndex: 2}}>
+              <ThemedButton
+                name="bruce"
+                type="anchor"
+                textFontFamily="icielPony"
+                borderRadius={100}
+                width={null}
+                onPress={handleHint}
+                disabled={word?.hintIndexes?.length >= 2 || !room?.canHint}
+                raiseLevel={5}>
+                <Icon name="lightbulb-o" size={30} color="black" />
+              </ThemedButton>
+            </View>
           </View>
         );
       } else
         return (
-          <View style={{flex: 0.45}}>
-            {room.currentWord && <Hint user={user} room={room} />}
-            <ViewDrawArea user={user} room={room} />
+          <View style={{flex: 1}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                zIndex: 1,
+                paddingTop: 4,
+              }}>
+              {room.currentWord &&
+                word?.showHint &&
+                word.value.split('').map((letter, index) => (
+                  <Text style={styles.text} key={`${letter}${Math.random()}`}>
+                    {word.hintIndexes.includes(index) || letter === ' '
+                      ? letter
+                      : '_'}
+                  </Text>
+                ))}
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+              }}>
+              <View style={{flex: 0.55}}>
+                <ViewDrawArea user={user} room={room} />
+              </View>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                zIndex: 100,
+              }}></View>
           </View>
         );
     }
@@ -456,16 +569,15 @@ const styles = StyleSheet.create({
   },
   drawContainer: {
     position: 'relative',
-    flex: 0.4,
+    flex: 0.5,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
   },
   draw: {
     // position: 'absolute',
-    top: 0,
-    left: 0,
     width: '100%',
     height: '100%',
-    borderRadius: 20,
-    backgroundColor: '#fff',
   },
   tools: {
     position: 'absolute',
@@ -527,6 +639,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: 'icielPony',
+    color: '#333',
     fontSize: 20,
   },
 });
