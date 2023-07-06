@@ -3,7 +3,7 @@ import {ThemedButton} from 'react-native-really-awesome-button';
 import Icon from 'react-native-vector-icons/Octicons';
 import colors from '../assets/colors';
 
-const BackButton = goBackKey => {
+const BackButton = ({goBackKey}) => {
   const navigation = useNavigation();
 
   const handleBack = () => {

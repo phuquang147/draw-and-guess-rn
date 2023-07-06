@@ -77,7 +77,7 @@ const HomeScreen = ({navigation, route}) => {
             textFontFamily="icielPony"
             borderRadius={100}
             width={null}
-            raiseLevel={5}
+            raiseLevel={2}
             onPress={signOut}>
             <Icon name="user" size={24} color="white" />
           </ThemedButton>
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     paddingVertical: 10,
     paddingHorizontal: 10,
     alignItems: 'center',

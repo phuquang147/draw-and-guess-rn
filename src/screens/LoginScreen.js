@@ -6,8 +6,7 @@ import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../assets/colors';
-import WordSelectionModal from '../components/WordSelectionModal';
-import PhotoSelectionModal from '../components/PhotoSelectionModal';
+import commonStyles from '../assets/styles/commonStyles';
 
 GoogleSignin.configure({
   webClientId:
@@ -28,54 +27,32 @@ const LoginScreen = () => {
     <SafeAreaView style={styles.container}>
       <ImageBackground
         style={styles.background}
-        source={{
-          uri: 'https://st3.depositphotos.com/6741230/13012/v/950/depositphotos_130128092-stock-illustration-doodles-seamless-pattern-vector-set.jpg',
-        }}>
-        <View style={styles.header}>
-          <Image
-            style={styles.logo}
-            source={require('../assets/images/splash.png')}
-          />
-          <ThemedButton
-            name="bruce"
-            type="anchor"
-            backgroundColor={colors.red}
-            borderColor="black"
-            backgroundDarker="black"
-            textFontFamily="Pony"
-            borderRadius={100}
-            width={null}
-            raiseLevel={5}>
-            <Icon name="close" size={24} color="white" />
-          </ThemedButton>
-        </View>
+        source={require('../assets/images/bg.jpg')}>
         <View style={styles.content}>
           <Text style={styles.loginText}>ĐĂNG NHẬP</Text>
           <ThemedButton
             name="bruce"
             type="anchor"
             backgroundColor={colors.blue}
-            borderColor="black"
-            backgroundDarker="black"
+            borderColor={colors.darkBlue}
+            backgroundDarker={colors.darkBlue}
             textFontFamily="Pony"
             raiseLevel={5}
             paddingTop={5}
             paddingBottom={5}
             style={styles.button}
-            paddingHorizontal={5}
+            paddingHorizontal={24}
             width={null}
             onPress={() =>
               onGoogleButtonPress()
                 .then(() => console.log('Signed in with Google!'))
                 .catch(error => console.log(error))
             }>
-            <Image
-              style={styles.googleIcon}
-              source={{
-                uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/2008px-Google_%22G%22_Logo.svg.png',
-              }}
-            />
-            <Text style={styles.text}>Đăng nhập với Google</Text>
+            <Icon name="google" size={40} color="white" />
+            <Text
+              style={[commonStyles.buttonText, {fontSize: 20, marginLeft: 5}]}>
+              Đăng nhập với Google
+            </Text>
           </ThemedButton>
         </View>
       </ImageBackground>
@@ -96,27 +73,12 @@ const styles = StyleSheet.create({
     // resizeMode: "contain",
     color: 'red',
   },
-  logo: {
-    height: 80,
-    width: 160,
-    resizeMode: 'contain',
-    backgroundColor: '#ced4da',
-    opacity: 0.9,
-    borderRadius: 19,
-  },
-  header: {
-    // flex: 1,
-    // backgroundColor: 'red',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    alignItems: 'center',
-  },
+
   content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 20,
   },
   text: {
     fontFamily: 'icielPony',
@@ -127,11 +89,11 @@ const styles = StyleSheet.create({
   loginText: {
     width: '100%',
     textAlign: 'center',
-    fontSize: 60,
+    fontSize: 40,
     color: '#f59f00',
     fontFamily: 'icielPony',
     textShadowColor: '#585858',
-    textShadowOffset: {width: 10, height: 5},
+    textShadowOffset: {width: 2, height: 1},
     textShadowRadius: 5,
   },
   button: {

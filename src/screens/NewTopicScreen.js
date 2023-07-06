@@ -150,6 +150,7 @@ const NewTopicScreen = ({navigation, route}) => {
                       onPress={() => {
                         handleRemoveWord(item.id);
                       }}
+                      android_ripple={{color: '#cc8686', radius: 20}}
                       style={styles.removeButton}>
                       <OctIcon name="x" size={24} color={colors.darkRed} />
                     </Pressable>
@@ -317,6 +318,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    borderColor: colors.darkRed,
+    borderWidth: 1,
   },
   nameContainer: {
     height: 50,
@@ -326,5 +329,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     flexDirection: 'row',
     gap: 16,
+  },
+  overlay: {
+    position: 'absolute',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    width: '100%',
+    height: '100%',
   },
 });

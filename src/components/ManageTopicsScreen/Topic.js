@@ -21,6 +21,7 @@ const Topic = ({topic}) => {
         </View>
         <Pressable
           style={styles.editButton}
+          android_ripple={{color: '#84accc', radius: 20}}
           onPress={() => {
             navigation.navigate('NewTopicScreen', {topic});
           }}>
@@ -64,5 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    borderColor: colors.darkBlue,
+    borderWidth: 1,
   },
 });

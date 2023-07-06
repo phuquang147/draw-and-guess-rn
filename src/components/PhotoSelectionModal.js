@@ -16,6 +16,8 @@ import {
   selectImageFromLibrary,
 } from '../services/imageServices';
 
+import commonStyles from '../assets/styles/commonStyles';
+
 const windowWidth = Dimensions.get('window').width;
 
 const PhotoSelectionModal = ({visible, setVisiable, onUploadSuccess}) => {
@@ -45,7 +47,9 @@ const PhotoSelectionModal = ({visible, setVisiable, onUploadSuccess}) => {
               onPress={() => {
                 selectImageFromCamera(onUploadSuccess);
               }}>
-              <Text style={styles.text}>Camera</Text>
+              <Text style={[commonStyles.buttonText, {fontSize: 24}]}>
+                Camera
+              </Text>
             </ThemedButton>
             <ThemedButton
               name="bruce"
@@ -59,7 +63,9 @@ const PhotoSelectionModal = ({visible, setVisiable, onUploadSuccess}) => {
               onPress={() => {
                 selectImageFromLibrary(onUploadSuccess);
               }}>
-              <Text style={styles.text}>Thư viện ảnh</Text>
+              <Text style={[commonStyles.buttonText, {fontSize: 24}]}>
+                Thư viện ảnh
+              </Text>
             </ThemedButton>
           </View>
         </TouchableWithoutFeedback>

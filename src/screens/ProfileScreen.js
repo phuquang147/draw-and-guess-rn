@@ -14,19 +14,23 @@ import {
 } from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Octicons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import colors from '../assets/colors';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import WordSelectionModal from '../components/WordSelectionModal';
 import PhotoSelectionModal from '../components/PhotoSelectionModal';
+import BackButton from '../components/BackButton';
+import commonStyles from '../assets/styles/commonStyles';
 
 const ProfileScreen = ({navigation, route}) => {
   const {userId} = route.params;
   const [user, setUser] = useState();
   const [editable, setEditable] = useState(false);
   const [name, setName] = useState();
-  // const [photo, setPhoto] = useState();
+  // const [photo, setPhoto] = useState('');
   const [visibleModal, setVisiableModal] = useState(false);
 
   useEffect(() => {
@@ -50,10 +54,6 @@ const ProfileScreen = ({navigation, route}) => {
   const signOut = () => {
     GoogleSignin.revokeAccess();
     auth().signOut();
-  };
-
-  const onClose = () => {
-    navigation.navigate('Home');
   };
 
   const onEditable = () => {
@@ -82,109 +82,30 @@ const ProfileScreen = ({navigation, route}) => {
       });
   };
 
-  const selectImageFromLibrary = () => {
-    const options = {
-      maxWidth: 2000,
-      maxHeight: 2000,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-    launchImageLibrary(options, response => {
-      console.log(response);
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        const source = {uri: response.assets[0].uri};
-        console.log(source);
-        uploadImage(source.uri);
-      }
-    });
-  };
-
-  const selectImageFromCamera = () => {
-    const options = {
-      maxWidth: 2000,
-      maxHeight: 2000,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-    launchCamera(options, response => {
-      console.log(response);
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        const source = {uri: response.assets[0].uri};
-        console.log(source);
-        uploadImage(source.uri);
-      }
-    });
-  };
-
   const selectImage = () => {
     setVisiableModal(true);
   };
 
-  const uploadImage = async photo => {
-    const uri = photo;
-    const filename = uri.substring(uri.lastIndexOf('/') + 1);
-    const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-    const task = storage().ref(filename).putFile(uploadUri);
-    try {
-      await task;
-      const reference = storage().ref(filename);
-      const imageUrl = await reference.getDownloadURL();
-      firestore()
-        .collection('users')
-        .doc(userId)
-        .update({
-          photo: imageUrl,
-        })
-        .then(() => {
-          Alert.alert('Thay đổi thành công!');
-          setVisiableModal(false);
-        });
-    } catch (e) {
-      console.error(e);
-    }
+  const handleUploadSuccess = url => {
+    firestore()
+      .collection('users')
+      .doc(userId)
+      .update({
+        photo: url,
+      })
+      .then(() => {
+        Alert.alert('Thay đổi thành công!');
+        setVisiableModal(false);
+      });
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
         style={styles.background}
-        source={{
-          uri: 'https://st3.depositphotos.com/6741230/13012/v/950/depositphotos_130128092-stock-illustration-doodles-seamless-pattern-vector-set.jpg',
-        }}>
+        source={require('../assets/images/bg.jpg')}>
         <View style={styles.header}>
-          <Image
-            style={styles.logo}
-            source={require('../assets/images/splash.png')}
-          />
-          <ThemedButton
-            name="bruce"
-            type="anchor"
-            backgroundColor={colors.red}
-            borderColor="black"
-            backgroundDarker="black"
-            textFontFamily="icielPony"
-            borderRadius={100}
-            width={null}
-            onPress={onClose}
-            raiseLevel={5}>
-            <Icon name="close" size={24} color="white" />
-          </ThemedButton>
+          <BackButton goBackKey={'Home'} />
         </View>
         {user && (
           <View style={styles.content}>
@@ -197,54 +118,67 @@ const ProfileScreen = ({navigation, route}) => {
                   }}
                 />
               </TouchableOpacity>
-
-              <TextInput
-                style={styles.input}
-                value={name}
-                editable={editable}
-                onChangeText={value => onNameChange(value)}
-              />
-              {!editable ? (
-                <ThemedButton
-                  name="bruce"
-                  type="anchor"
-                  backgroundColor={colors.green}
-                  borderColor="black"
-                  backgroundDarker="black"
-                  textFontFamily="icielPony"
-                  raiseLevel={5}
-                  width={null}
-                  onPress={onEditable}
-                  style={styles.button}>
-                  <Text style={styles.text}>Thay đổi</Text>
-                </ThemedButton>
-              ) : (
+              <View style={styles.textInputContainter}>
+                <TextInput
+                  style={styles.input}
+                  value={name}
+                  editable={editable}
+                  onChangeText={value => onNameChange(value)}
+                />
+                <View style={styles.buttonContainer}>
+                  {!editable && (
+                    <ThemedButton
+                      name="bruce"
+                      type="anchor"
+                      backgroundColor={colors.yellow}
+                      borderColor={colors.darkYellow}
+                      backgroundDarker={colors.darkYellow}
+                      textFontFamily="icielPony"
+                      borderRadius={8}
+                      paddingHorizontal={0}
+                      paddingTop={0}
+                      width={50}
+                      height={50}
+                      onPress={onEditable}
+                      raiseLevel={2}>
+                      <Icon name="pencil" size={24} color="black" />
+                    </ThemedButton>
+                  )}
+                </View>
+              </View>
+              {editable && (
                 <View style={styles.changeBtnContainer}>
                   <ThemedButton
                     name="bruce"
                     type="anchor"
                     backgroundColor={colors.red}
-                    borderColor="black"
-                    backgroundDarker="black"
+                    borderColor={colors.darkRed}
+                    backgroundDarker={colors.darkRed}
                     textFontFamily="icielPony"
-                    raiseLevel={5}
-                    width={null}
+                    borderRadius={8}
+                    paddingHorizontal={0}
+                    paddingTop={0}
+                    width={50}
+                    height={50}
                     onPress={onCancel}
-                    style={styles.button}>
-                    <Text style={styles.text}>Hủy</Text>
+                    raiseLevel={2}>
+                    <MCIcon name="close" size={28} color="white" />
                   </ThemedButton>
                   <ThemedButton
                     name="bruce"
                     type="anchor"
-                    backgroundColor={colors.blue}
-                    borderColor="black"
-                    backgroundDarker="black"
+                    backgroundColor={colors.green}
+                    borderColor={colors.darkGreen}
+                    backgroundDarker={colors.darkGreen}
                     textFontFamily="icielPony"
-                    raiseLevel={5}
-                    width={null}
+                    borderRadius={8}
+                    paddingHorizontal={0}
+                    paddingTop={0}
+                    width={50}
+                    height={50}
                     onPress={onSave}
-                    style={styles.button}>
-                    <Text style={styles.text}>Lưu</Text>
+                    raiseLevel={2}>
+                    <MCIcon name="check" size={28} color="white" />
                   </ThemedButton>
                 </View>
               )}
@@ -254,13 +188,13 @@ const ProfileScreen = ({navigation, route}) => {
               name="bruce"
               type="anchor"
               backgroundColor={colors.red}
-              borderColor="black"
-              backgroundDarker="black"
+              borderColor={colors.darkRed}
+              backgroundDarker={colors.darkRed}
               textFontFamily="icielPony"
               raiseLevel={5}
               onPress={signOut}
               style={styles.button}>
-              <Text style={styles.text}>Đăng xuất</Text>
+              <Text style={commonStyles.buttonText}>Đăng xuất</Text>
             </ThemedButton>
           </View>
         )}
@@ -269,8 +203,7 @@ const ProfileScreen = ({navigation, route}) => {
       <PhotoSelectionModal
         visible={visibleModal}
         setVisiable={setVisiableModal}
-        onCamera={selectImageFromCamera}
-        onPhotoLibrary={selectImageFromLibrary}
+        onUploadSuccess={handleUploadSuccess}
       />
     </SafeAreaView>
   );
@@ -305,7 +238,6 @@ const styles = StyleSheet.create({
     // flex: 1,
     // backgroundColor: "red",
     flexDirection: 'row',
-    justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 10,
     alignItems: 'center',
@@ -336,20 +268,19 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     backgroundColor: '#ced4da',
     borderRadius: 100,
-    borderWidth: 4,
+    borderWidth: 1,
     borderColor: 'black',
   },
   input: {
     height: 50,
-    width: '60%',
-    borderWidth: 4,
-    borderColor: 'black',
+    borderWidth: 1,
+    flex: 1,
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: 'white',
     textAlign: 'center',
-    borderRadius: 100,
     fontSize: 24,
+    borderRadius: 8,
   },
   changeBtnContainer: {
     width: '100%',
@@ -358,5 +289,13 @@ const styles = StyleSheet.create({
     gap: 20,
     paddingHorizontal: 10,
     alignItems: 'center',
+  },
+  textInputContainter: {
+    flexDirection: 'row',
+    width: '60%',
+  },
+  buttonContainer: {
+    position: 'absolute',
+    right: -55,
   },
 });
