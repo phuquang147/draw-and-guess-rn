@@ -1,6 +1,5 @@
-import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
   Image,
   ImageBackground,
@@ -9,35 +8,54 @@ import {
   TextInput,
   View,
   Alert,
+  FlatList,
 } from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../assets/colors';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import Room from '../components/Room';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-const HomeScreen = ({navigation, route}) => {
+const JoinRoomScreen = ({navigation, route}) => {
+  const [id, setId] = useState('');
   const {user} = route.params;
-  const onCreateRoom = () => {
-    navigation.navigate('CreateRoomScreen');
+  const [rooms, setRooms] = useState([]);
+
+  const onClose = () => {
+    navigation.navigate('Home');
   };
 
-  const onJoinRoom = () => {
-    navigation.navigate('JoinRoomScreen');
-  };
-
-  const signOut = () => {
-    navigation.navigate('ProfileScreen', {userId: user.uid});
-  };
-
-  const handleJoinRandomRoom = () => {
+  useEffect(async () => {
     firestore()
       .collection('rooms')
-      .where('canJoin', '==', true)
+      .get()
+      .then(async querySnapshot => {
+        const tempRooms = [];
+        for(let room of querySnapshot.docs) {
+          await room.ref
+            .collection('members')
+            .count()
+            .get()
+            .then(snapshot =>
+              tempRooms.push({
+                ...room.data(),
+                id: room.id,
+                currentMembers: snapshot.data().count,
+              }),
+            );
+        }
+        setRooms(tempRooms);
+      });
+  }, []);
+
+  const handleJoinRoom = id => {
+    firestore()
+      .collection('rooms')
+      .doc(id)
       .get()
       .then(querySnapshot => {
-        if (querySnapshot.docs.length > 0) {
-          querySnapshot.docs[0].ref
+        if (querySnapshot.exists) {
+          querySnapshot.ref
             .collection('members')
             .orderBy('roundCount', 'asc')
             .limit(1)
@@ -47,8 +65,7 @@ const HomeScreen = ({navigation, route}) => {
                 .doc(`users/${user.uid}`)
                 .get()
                 .then(userSnapshot => {
-                  console.log(userSnapshot.data());
-                  querySnapshot.docs[0].ref
+                  querySnapshot.ref
                     .collection('members')
                     .doc(user.uid)
                     .set({
@@ -64,15 +81,16 @@ const HomeScreen = ({navigation, route}) => {
                       roundCount: snapshot.docs[0].data().roundCount,
                     })
                     .then(() => {
-                      console.log('Asss');
                       navigation.navigate('GuessScreen', {
-                        roomId: querySnapshot.docs[0].id,
+                        roomId: id,
                         user,
                       });
                     });
                 });
             });
-        } else Alert.alert('Không còn phòng trống! Vui lòng tạo phòng mới');
+        } else {
+          Alert.alert('Không tìm thấy phòng! Vui lòng kiểm tra lại.');
+        }
       });
   };
 
@@ -98,52 +116,17 @@ const HomeScreen = ({navigation, route}) => {
             borderRadius={100}
             width={null}
             raiseLevel={5}
-            onPress={signOut}>
-            <Icon name="user" size={24} color="white" />
+            onPress={onClose}>
+            <Icon name="close" size={24} color="white" />
           </ThemedButton>
         </View>
         <View style={styles.content}>
-          <View style={styles.avatarContainer}>
-            <ThemedButton
-              name="bruce"
-              type="anchor"
-              borderColor="black"
-              backgroundDarker="black"
-              textFontFamily="icielPony"
-              borderRadius={100}
-              width={null}
-              raiseLevel={5}>
-              <Icon name="arrow-left" size={24} color="black" />
-            </ThemedButton>
-            <Image
-              style={styles.avatar}
-              source={require('../assets/images/splash.png')}
-            />
-            <ThemedButton
-              name="bruce"
-              type="anchor"
-              borderColor="black"
-              backgroundDarker="black"
-              textFontFamily="icielPony"
-              borderRadius={100}
-              width={null}
-              raiseLevel={5}>
-              <Icon name="arrow-right" size={24} color="black" />
-            </ThemedButton>
-          </View>
-
-          <ThemedButton
-            name="bruce"
-            type="anchor"
-            backgroundColor={colors.green}
-            borderColor="black"
-            backgroundDarker="black"
-            textFontFamily="icielPony"
-            raiseLevel={5}
-            style={styles.button}
-            onPress={handleJoinRandomRoom}>
-            <Text style={styles.text}>Bắt đầu</Text>
-          </ThemedButton>
+          <TextInput
+            style={styles.input}
+            placeholder={'Nhập ID phòng'}
+            value={id}
+            onChangeText={value => setId(value)}
+          />
           <ThemedButton
             name="bruce"
             type="anchor"
@@ -152,29 +135,26 @@ const HomeScreen = ({navigation, route}) => {
             backgroundDarker="black"
             textFontFamily="icielPony"
             raiseLevel={5}
-            style={styles.button}
-            onPress={() => onCreateRoom()}>
-            <Text style={styles.text}>Tạo phòng</Text>
+            onPress={() => handleJoinRoom(id)}>
+            <Text style={styles.text}>Tham gia</Text>
           </ThemedButton>
-          <ThemedButton
-            name="bruce"
-            type="anchor"
-            backgroundColor={colors.yellow}
-            borderColor="black"
-            backgroundDarker="black"
-            textFontFamily="icielPony"
-            raiseLevel={5}
-            style={styles.button}
-            onPress={onJoinRoom}>
-            <Text style={styles.text}>Tìm kiếm</Text>
-          </ThemedButton>
+          <FlatList
+            style={styles.flatList}
+            data={rooms}
+            renderItem={({item}) => (
+              <Room room={item} onJoinRoom={handleJoinRoom} />
+            )}
+            keyExtractor={item => item.id}
+            ListEmptyComponent={() => <View />}
+            ItemSeparatorComponent={<View style={[{height: 12}]}/>}
+          />
         </View>
       </ImageBackground>
     </SafeAreaView>
   );
 };
 
-export default HomeScreen;
+export default JoinRoomScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -206,6 +186,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 10,
   },
   text: {
     fontFamily: 'icielPony',
@@ -223,6 +204,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
   },
+  joinRoomView: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    marginVertical: 10,
+  },
   avatar: {
     height: 160,
     width: 160,
@@ -234,7 +223,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    width: '60%',
+    width: '80%',
     marginHorizontal: 10,
     borderWidth: 4,
     borderColor: 'black',
@@ -244,5 +233,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderRadius: 100,
     fontSize: 24,
+  },
+  flatList: {
+    flex: 1,
+    width: "90%"
   },
 });
