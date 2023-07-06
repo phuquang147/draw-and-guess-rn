@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {firebase} from '@react-native-firebase/database';
 import {Dimensions, Modal, StyleSheet, Text, View} from 'react-native';
 import * as Progress from 'react-native-progress';
 import {ThemedButton} from 'react-native-really-awesome-button';
@@ -6,23 +7,29 @@ import colors from '../assets/colors';
 
 const windowWidth = Dimensions.get('window').width;
 
-const WordSelectionModal = ({wordRef, onSkip, onDraw}) => {
+const WordSelectionModal = ({room, onSkip, onDraw, roomId}) => {
   const [keyWord, setKeyWord] = useState('');
   const [remainingTime, setRemainingTime] = useState(10000);
 
   useEffect(() => {
-    wordRef?.get().then(value => setKeyWord(value.data().value));
-  }, [wordRef]);
+    room?.currentWord?.get().then(value => setKeyWord(value.data().value));
+  }, [room?.currentWord]);
 
   useEffect(() => {
-    setInterval(() => {
-      setRemainingTime(prev => prev - 1000);
-    }, 1000);
+    const databaseRef = firebase
+      .app()
+      .database(
+        'https://drawandguessgame-default-rtdb.asia-southeast1.firebasedatabase.app/',
+      )
+      .ref(`/rooms/${roomId}-choosing-${room?.roundCount}`);
+    const onValueChange = snapshot => {
+      if (snapshot.val()) setRemainingTime(snapshot.val().remaining);
+    };
+    const valueListener = databaseRef.on('value', onValueChange);
+    return () => {
+      databaseRef.off('value', valueListener);
+    };
   }, []);
-
-  useEffect(() => {
-    if (remainingTime <= 0) onSkip();
-  }, [remainingTime]);
 
   return (
     <Modal animationType="fade" transparent={true} visible={true}>

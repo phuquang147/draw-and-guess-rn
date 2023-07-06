@@ -152,6 +152,50 @@ exports.listenToRoomStateChange = functions
             roundCount: admin.firestore.FieldValue.increment(1),
             isChoosing: true,
           });
+          // countdown
+          admin
+            .database()
+            .ref(`/rooms/${roomId}-choosing-${newRoundCount}`)
+            .set({remaining: 10000});
+          let countDownTime = 10000;
+
+          // Countdown
+          const interval = setInterval(() => {
+            countDownTime -= 1000;
+
+            admin
+              .database()
+              .ref(`/rooms/${roomId}-choosing-${newRoundCount}`)
+              .set({remaining: countDownTime});
+
+            if (countDownTime <= 0) {
+              {
+                admin
+                  .database()
+                  .ref(`/rooms/${roomId}-choosing-${newRoundCount + 1}`)
+                  .once('value')
+                  .then(snapshot => {
+                    if (
+                      snapshot.val() ||
+                      newRoomState === 'playing' ||
+                      newRoomState === 'skipping'
+                    ) {
+                      clearInterval(interval);
+                    } else {
+                      clearInterval(interval);
+                      admin.firestore().doc(`rooms/${roomId}`).update({
+                        state: 'skipping',
+                      });
+                    }
+                  });
+
+                admin
+                  .database()
+                  .ref(`/rooms/${roomId}-choosing-${newRoundCount}`)
+                  .remove();
+              }
+            }
+          }, 1000);
         });
     }
 
