@@ -1,18 +1,10 @@
-import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {
-  Image,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  View,
-  Alert,
-} from 'react-native';
+import {Alert, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../assets/colors';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import commonStyles from '../assets/styles/commonStyles';
 
 const HomeScreen = ({navigation, route}) => {
   const {user} = route.params;
@@ -74,20 +66,14 @@ const HomeScreen = ({navigation, route}) => {
     <SafeAreaView style={styles.container}>
       <ImageBackground
         style={styles.background}
-        source={{
-          uri: 'https://st3.depositphotos.com/6741230/13012/v/950/depositphotos_130128092-stock-illustration-doodles-seamless-pattern-vector-set.jpg',
-        }}>
+        source={require('../assets/images/bg.jpg')}>
         <View style={styles.header}>
-          <Image
-            style={styles.logo}
-            source={require('../assets/images/splash.png')}
-          />
           <ThemedButton
             name="bruce"
             type="anchor"
             backgroundColor={colors.red}
-            borderColor="black"
-            backgroundDarker="black"
+            borderColor={colors.darkRed}
+            backgroundDarker={colors.darkRed}
             textFontFamily="icielPony"
             borderRadius={100}
             width={null}
@@ -97,58 +83,51 @@ const HomeScreen = ({navigation, route}) => {
           </ThemedButton>
         </View>
         <View style={styles.content}>
-          <View style={styles.avatarContainer}>
-            <ThemedButton
-              name="bruce"
-              type="anchor"
-              borderColor="black"
-              backgroundDarker="black"
-              textFontFamily="icielPony"
-              borderRadius={100}
-              width={null}
-              raiseLevel={5}>
-              <Icon name="arrow-left" size={24} color="black" />
-            </ThemedButton>
+          {/* <View style={styles.logoContainer}>
+            <View style={styles.logoOverlay}></View>
             <Image
-              style={styles.avatar}
+              style={styles.logo}
               source={require('../assets/images/splash.png')}
             />
-            <ThemedButton
-              name="bruce"
-              type="anchor"
-              borderColor="black"
-              backgroundDarker="black"
-              textFontFamily="icielPony"
-              borderRadius={100}
-              width={null}
-              raiseLevel={5}>
-              <Icon name="arrow-right" size={24} color="black" />
-            </ThemedButton>
-          </View>
-
+          </View> */}
           <ThemedButton
             name="bruce"
             type="anchor"
             backgroundColor={colors.green}
-            borderColor="black"
-            backgroundDarker="black"
+            borderColor={colors.darkGreen}
+            backgroundDarker={colors.darkGreen}
             textFontFamily="icielPony"
+            textColor={colors.darkGreen}
             raiseLevel={5}
             style={styles.button}
             onPress={handleJoinRandomRoom}>
-            <Text style={styles.text}>Bắt đầu</Text>
+            <Text style={commonStyles.buttonText}>Bắt đầu</Text>
           </ThemedButton>
           <ThemedButton
             name="bruce"
             type="anchor"
             backgroundColor={colors.blue}
-            borderColor="black"
-            backgroundDarker="black"
+            borderColor={colors.darkBlue}
+            backgroundDarker={colors.darkBlue}
             textFontFamily="icielPony"
             raiseLevel={5}
             style={styles.button}
             onPress={() => onCreateRoom()}>
-            <Text style={styles.text}>Tạo phòng</Text>
+            <Text style={commonStyles.buttonText}>Tạo phòng</Text>
+          </ThemedButton>
+          <ThemedButton
+            name="bruce"
+            type="anchor"
+            backgroundColor={colors.pink}
+            borderColor={colors.darkPink}
+            backgroundDarker={colors.darkPink}
+            textFontFamily="icielPony"
+            raiseLevel={5}
+            style={styles.button}
+            onPress={() => {
+              navigation.navigate('ManageTopicsScreen', {userId: user.uid});
+            }}>
+            <Text style={commonStyles.buttonText}>Chủ đề</Text>
           </ThemedButton>
         </View>
       </ImageBackground>
@@ -161,23 +140,34 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   background: {
     flex: 1,
-    // resizeMode: "contain",
+  },
+  logoContainer: {
+    width: 200,
+    height: 200,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoOverlay: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'white',
+    opacity: 0.5,
+    borderRadius: 100,
+    borderColor: colors.blue,
+    borderWidth: 1,
   },
   logo: {
-    height: 80,
+    height: 160,
     width: 160,
     resizeMode: 'contain',
-    backgroundColor: '#ced4da',
-    opacity: 0.9,
-    borderRadius: 19,
+    zIndex: 10,
   },
   header: {
-    // flex: 1,
-    // backgroundColor: "red",
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 10,
@@ -189,43 +179,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  text: {
-    fontFamily: 'icielPony',
-    fontSize: 30,
-    color: '#333',
-  },
   button: {
     marginTop: 16,
-  },
-  avatarContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 20,
-    alignItems: 'center',
-    paddingHorizontal: 10,
-  },
-  avatar: {
-    height: 160,
-    width: 160,
-    resizeMode: 'contain',
-    backgroundColor: '#ced4da',
-    borderRadius: 100,
-    borderWidth: 4,
-    borderColor: 'black',
-  },
-  input: {
-    height: 50,
-    width: '60%',
-    marginVertical: 30,
-    marginHorizontal: 20,
-    borderWidth: 4,
-    borderColor: 'black',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: 'white',
-    textAlign: 'center',
-    borderRadius: 100,
-    fontSize: 24,
   },
 });

@@ -7,6 +7,8 @@ import CreateRoomScreen from './src/screens/CreateRoomScreen';
 import GuessScreen from './src/screens/GuessScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
+import ManageTopicsScreen from './src/screens/ManageTopicsScreen';
+import NewTopicScreen from './src/screens/NewTopicScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
@@ -67,6 +69,18 @@ function App() {
         <Stack.Screen
           name="GuessScreen"
           component={GuessScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="ManageTopicsScreen"
+          component={ManageTopicsScreen}
+          initialParams={{user}}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="NewTopicScreen"
+          component={NewTopicScreen}
+          initialParams={{user}}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
