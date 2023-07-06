@@ -1,28 +1,24 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
-  Alert,
+  Dimensions,
   Modal,
+  Pressable,
   StyleSheet,
   Text,
-  Pressable,
-  View,
-  Image,
-  Dimensions,
   TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
-import * as Progress from 'react-native-progress';
 
 import colors from '../assets/colors';
+import {
+  selectImageFromCamera,
+  selectImageFromLibrary,
+} from '../services/imageServices';
 
 const windowWidth = Dimensions.get('window').width;
 
-const PhotoSelectionModal = ({
-  visible,
-  setVisiable,
-  onPhotoLibrary,
-  onCamera,
-}) => {
+const PhotoSelectionModal = ({visible, setVisiable, onUploadSuccess}) => {
   const onClose = () => {
     setVisiable(false);
   };
@@ -46,7 +42,9 @@ const PhotoSelectionModal = ({
               textFontFamily="icielPony"
               raiseLevel={5}
               style={styles.button}
-              onPress={onCamera}>
+              onPress={() => {
+                selectImageFromCamera(onUploadSuccess);
+              }}>
               <Text style={styles.text}>Camera</Text>
             </ThemedButton>
             <ThemedButton
@@ -58,7 +56,9 @@ const PhotoSelectionModal = ({
               textFontFamily="icielPony"
               raiseLevel={5}
               style={styles.button}
-              onPress={onPhotoLibrary}>
+              onPress={() => {
+                selectImageFromLibrary(onUploadSuccess);
+              }}>
               <Text style={styles.text}>Thư viện ảnh</Text>
             </ThemedButton>
           </View>
