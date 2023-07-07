@@ -107,6 +107,7 @@ const renderDrawArea = (user, room, members) => {
         return (
           <View style={styles.startButtonWrapper}>
             <Pressable
+              android_ripple={{color: '#ccc', radius: 14}}
               style={styles.icon}
               onPress={() => {
                 setRoomInfoModalVisible(true);
@@ -148,6 +149,7 @@ const renderDrawArea = (user, room, members) => {
             <Text style={styles.buttonText}>Vui lòng chờ...</Text>
             <Pressable
               style={styles.icon}
+              android_ripple={{color: '#ccc', radius: 14}}
               onPress={() => {
                 setRoomInfoModalVisible(true);
               }}>
@@ -192,6 +194,7 @@ const renderDrawArea = (user, room, members) => {
           <View style={{flex: 1}}>
             <Pressable
               style={styles.icon}
+              android_ripple={{color: '#ccc', radius: 14}}
               onPress={() => {
                 setRoomInfoModalVisible(true);
               }}>
@@ -258,6 +261,7 @@ const renderDrawArea = (user, room, members) => {
           <View style={{flex: 1}}>
             <Pressable
               style={styles.icon}
+              android_ripple={{color: '#ccc', radius: 14}}
               onPress={() => {
                 setRoomInfoModalVisible(true);
               }}>
@@ -629,7 +633,7 @@ export default GuessScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#7b53ff',
+    backgroundColor: '#6b46e6',
     padding: 5,
     paddingBottom: 15,
     flexDirection: 'column',
@@ -659,7 +663,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   playerList: {
-    backgroundColor: '#7b53ff',
+    backgroundColor: '#6b46e6',
   },
   players: {
     flex: 0.44,

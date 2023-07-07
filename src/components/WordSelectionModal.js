@@ -51,7 +51,7 @@ const WordSelectionModal = ({room, onSkip, onDraw, roomId}) => {
                 raiseLevel={5}
                 width={windowWidth * 0.3}
                 style={styles.button}
-                onPress={onSkip}>
+                onPress={() => onSkip()}>
                 <Text style={[commonStyles.buttonText, {fontSize: 20}]}>
                   Bỏ lượt
                 </Text>
@@ -66,7 +66,7 @@ const WordSelectionModal = ({room, onSkip, onDraw, roomId}) => {
                 raiseLevel={5}
                 width={windowWidth * 0.3}
                 style={styles.button}
-                onPress={onDraw}>
+                onPress={() => onDraw()}>
                 <Text style={[commonStyles.buttonText, {fontSize: 20}]}>
                   Vẽ
                 </Text>
