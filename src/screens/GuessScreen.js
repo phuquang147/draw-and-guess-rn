@@ -165,15 +165,13 @@ const renderDrawArea = (user, room, members) => {
             )}
           </View>
         );
-    }
-    if (room.state === 'endRound') {
+    } else if (room.state === 'endRound') {
       return (
         <View style={styles.startButtonWrapper}>
           <Text style={styles.buttonText}>{word?.value}</Text>
         </View>
       );
-    }
-    if (room.state === 'skipping') {
+    } else if (room.state === 'skipping') {
       return (
         <View style={styles.startButtonWrapper}>
           <Text
@@ -182,14 +180,13 @@ const renderDrawArea = (user, room, members) => {
             }>{`${currentMemberName} đã bỏ lượt ???`}</Text>
         </View>
       );
-    }
-    if (room.state === 'endGame') {
+    } else if (room.state === 'endGame') {
       return (
         <View style={styles.startButtonWrapper}>
           <GameOverRanking players={players} />
         </View>
       );
-    } else {
+    } else if (room.state === 'playing') {
       if (user.isDrawing) {
         return (
           <View style={{flex: 1}}>
@@ -206,7 +203,9 @@ const renderDrawArea = (user, room, members) => {
                     style={[
                       styles.buttonText,
                       word.showHint ? {textDecorationLine: 'underline'} : '',
-                      word.hintIndexes.includes(index) ? {color: 'green'} : '',
+                      word.hintIndexes.includes(index)
+                        ? {color: colors.lightGreen}
+                        : '',
                     ]}
                     key={`${letter}${Math.random()}`}>
                     {letter}

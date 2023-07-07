@@ -11,7 +11,7 @@ const Player = ({player}) => {
           style={styles.icon}
           name="pencil"
           size={24}
-          color={colors.darkGreen}
+          color={colors.lightGreen}
         />
       )}
       {player.isCorrect && (
@@ -19,7 +19,7 @@ const Player = ({player}) => {
           style={styles.icon}
           name="check"
           size={24}
-          color={colors.darkGreen}
+          color={colors.lightGreen}
         />
       )}
       <View style={styles.info}>
