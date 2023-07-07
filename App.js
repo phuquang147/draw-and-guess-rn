@@ -11,6 +11,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import ManageTopicsScreen from './src/screens/ManageTopicsScreen';
 import NewTopicScreen from './src/screens/NewTopicScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import {LogBox} from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +47,8 @@ function App() {
   if (!user) {
     return <LoginScreen />;
   }
+
+  LogBox.ignoreAllLogs();
 
   return (
     <NavigationContainer>

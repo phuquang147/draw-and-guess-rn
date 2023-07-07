@@ -1,6 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import {useState} from 'react';
-import {ImageBackground, StyleSheet, Text, View} from 'react-native';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -93,13 +93,13 @@ const HomeScreen = ({navigation, route}) => {
           </ThemedButton>
         </View>
         <View style={styles.content}>
-          {/* <View style={styles.logoContainer}>
-            <View style={styles.logoOverlay}></View>
+          <View style={styles.logoContainer}>
             <Image
               style={styles.logo}
-              source={require('../assets/images/splash.png')}
+              source={require('../assets/images/logo.png')}
             />
-          </View> */}
+            <Text style={styles.gameName}>Draw & Guess</Text>
+          </View>
           <ThemedButton
             name="bruce"
             type="anchor"
@@ -195,21 +195,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   logoContainer: {
-    width: 200,
+    width: '100%',
     height: 200,
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 30,
   },
-  logoOverlay: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'white',
-    opacity: 0.5,
-    borderRadius: 100,
-    borderColor: colors.blue,
-    borderWidth: 1,
+  gameName: {
+    fontFamily: 'icielPony',
+    fontSize: 32,
+    color: colors.darkGreen,
   },
   logo: {
     height: 160,

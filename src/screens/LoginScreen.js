@@ -29,7 +29,13 @@ const LoginScreen = () => {
         style={styles.background}
         source={require('../assets/images/bg.jpg')}>
         <View style={styles.content}>
-          <Text style={styles.loginText}>ĐĂNG NHẬP</Text>
+          <View style={styles.logoContainer}>
+            <Image
+              style={styles.logo}
+              source={require('../assets/images/logo.png')}
+            />
+            <Text style={styles.gameName}>Draw & Guess</Text>
+          </View>
           <ThemedButton
             name="bruce"
             type="anchor"
@@ -102,6 +108,24 @@ const styles = StyleSheet.create({
   googleIcon: {
     height: 50,
     width: 50,
-    // resizeMode: "contain",
+  },
+  logoContainer: {
+    width: '100%',
+    height: 200,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  gameName: {
+    fontFamily: 'icielPony',
+    fontSize: 32,
+    color: colors.darkGreen,
+  },
+  logo: {
+    height: 160,
+    width: 160,
+    resizeMode: 'contain',
+    zIndex: 10,
   },
 });
