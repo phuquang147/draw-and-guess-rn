@@ -294,9 +294,6 @@ const GuessScreen = ({navigation, route}) => {
   const [answer, setAnswer] = useState('');
   const [userInRoom, setUserInRoom] = useState(null);
 
-  const [wordSelectionModalVisible, setWordSelectionModalVisible] =
-    useState(false);
-
   useEffect(() => {
     const socket = io('https://draw-and-guess-server-qawt.onrender.com', {
       autoConnect: false,
@@ -377,32 +374,6 @@ const GuessScreen = ({navigation, route}) => {
     };
   }, [roomId]);
 
-  useEffect(() => {
-    if (userInRoom && userInRoom.isChoosing) setWordSelectionModalVisible(true);
-
-    // return () => {
-    //   console.log(userInRoom);
-    //   if (userInRoom && userInRoom?.isHost)
-    //     firestore()
-    //       .collection('rooms')
-    //       .doc(roomId)
-    //       .collection('members')
-    //       .where('uid', '!=', userInRoom.uid)
-    //       .limit(1)
-    //       .get(snapshot => {
-    //         console.log(snapshot.docs);
-    //         snapshot.docs[0].ref.update({isHost: true});
-    //       });
-
-    //   firestore()
-    //     .collection('rooms')
-    //     .doc(roomId)
-    //     .collection('members')
-    //     .doc(user.uid)
-    //     .delete();
-    // };
-  }, [userInRoom]);
-
   const handleSkip = () => {
     firestore()
       .collection('rooms')
@@ -411,7 +382,6 @@ const GuessScreen = ({navigation, route}) => {
       .doc(userInRoom.uid)
       .update({isChoosing: false});
     firestore().collection('rooms').doc(roomId).update({state: 'skipping'});
-    setWordSelectionModalVisible(false);
   };
 
   const handleDraw = () => {
@@ -422,7 +392,6 @@ const GuessScreen = ({navigation, route}) => {
       .doc(userInRoom.uid)
       .update({isChoosing: false, isDrawing: true});
     firestore().collection('rooms').doc(roomId).update({state: 'playing'});
-    setWordSelectionModalVisible(false);
   };
 
   const handleSendMessage = () => {
@@ -609,9 +578,10 @@ const GuessScreen = ({navigation, route}) => {
           </View>
         </View>
       )}
-      {roomInfo?.currentWord && wordSelectionModalVisible && (
+      {roomInfo?.currentWord && userInRoom?.isChoosing && (
         <WordSelectionModal
-          wordRef={roomInfo?.currentWord}
+          room={roomInfo}
+          roomId={roomId}
           onDraw={handleDraw}
           onSkip={handleSkip}
         />

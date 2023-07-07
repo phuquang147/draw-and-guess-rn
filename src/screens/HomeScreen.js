@@ -75,7 +75,7 @@ const HomeScreen = ({navigation, route}) => {
     <SafeAreaView style={styles.container}>
       <ImageBackground
         style={styles.background}
-        source={require('../assets/images/bg.jpg')}>
+        source={require('../assets/images/bg2.jpg')}>
         <View style={styles.header}>
           <ThemedButton
             name="bruce"

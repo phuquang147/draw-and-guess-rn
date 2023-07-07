@@ -27,7 +27,7 @@ const LoginScreen = () => {
     <SafeAreaView style={styles.container}>
       <ImageBackground
         style={styles.background}
-        source={require('../assets/images/bg.jpg')}>
+        source={require('../assets/images/bg2.jpg')}>
         <View style={styles.content}>
           <View style={styles.logoContainer}>
             <Image
