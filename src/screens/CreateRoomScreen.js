@@ -27,7 +27,10 @@ const CreateRoomScreen = ({navigation, route}) => {
 
   useEffect(() => {
     const getTopics = async () => {
-      const topicsSnapshot = await firestore().collection('topics').get();
+      const topicsSnapshot = await firestore()
+        .collection('topics')
+        .where('author', 'in', ['admin', user.uid])
+        .get();
       setTopics(topicsSnapshot.docs.map(topic => topic.data()));
       setSelectedTopic(0);
     };
