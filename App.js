@@ -12,12 +12,15 @@ import ManageTopicsScreen from './src/screens/ManageTopicsScreen';
 import NewTopicScreen from './src/screens/NewTopicScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import {LogBox} from 'react-native';
+import {useNetInfo} from '@react-native-community/netinfo';
+import LostConnectionScreen from './src/screens/LostConnectionScreen';
 
 const Stack = createNativeStackNavigator();
 
 function App() {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
+  const netInfo = useNetInfo();
 
   const onAuthStateChanged = async user => {
     setUser(user);
@@ -44,6 +47,7 @@ function App() {
 
   if (initializing) return null;
 
+  if (!netInfo.isConnected) return <LostConnectionScreen />;
   if (!user) {
     return <LoginScreen />;
   }
