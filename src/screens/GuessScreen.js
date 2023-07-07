@@ -145,7 +145,7 @@ const renderDrawArea = (user, room, members) => {
       else
         return (
           <View style={styles.startButtonWrapper}>
-            <Text style={styles.waitingText}>Vui lòng chờ...</Text>
+            <Text style={styles.buttonText}>Vui lòng chờ...</Text>
             <Pressable
               style={styles.icon}
               onPress={() => {
@@ -557,7 +557,17 @@ const GuessScreen = ({navigation, route}) => {
               keyExtractor={item => item.id}
               ItemSeparatorComponent={() => <View style={{height: 6}}></View>}
             />
-            <View style={styles.inputContainer}>
+            <View
+              style={[
+                styles.inputContainer,
+                roomInfo &&
+                roomInfo.state === 'playing' &&
+                userInRoom &&
+                !userInRoom.isCorrect &&
+                !userInRoom.isDrawing
+                  ? ''
+                  : {backgroundColor: colors.grey},
+              ]}>
               <TextInput
                 style={styles.input}
                 placeholder={
@@ -565,6 +575,7 @@ const GuessScreen = ({navigation, route}) => {
                     ? 'Nhập câu trả lời'
                     : 'Vui lòng chờ...'
                 }
+                placeholderTextColor={colors.darkGrey}
                 value={answer}
                 onChangeText={value => setAnswer(value)}
                 onEndEditing={handleSendMessage}
@@ -579,10 +590,20 @@ const GuessScreen = ({navigation, route}) => {
               <Pressable
                 onPress={handleSendMessage}
                 disabled={
-                  (roomInfo && roomInfo.state === 'waiting') ||
+                  (roomInfo && roomInfo.state !== 'playing') ||
                   (userInRoom && userInRoom.isCorrect)
-                }>
-                <Icon name="send" color="#7b54ff" size={20} />
+                }
+                android_ripple={{color: '#84accc', radius: 10}}>
+                <Icon
+                  name="send"
+                  color={
+                    (roomInfo && roomInfo.state !== 'playing') ||
+                    (userInRoom && userInRoom.isCorrect)
+                      ? colors.darkGrey
+                      : '#7b54ff'
+                  }
+                  size={20}
+                />
               </Pressable>
             </View>
           </View>
@@ -612,7 +633,7 @@ const styles = StyleSheet.create({
   drawContainer: {
     position: 'relative',
     flex: 0.5,
-    borderRadius: 10,
+    borderRadius: 8,
     backgroundColor: '#fff',
     overflow: 'hidden',
   },
@@ -642,7 +663,7 @@ const styles = StyleSheet.create({
   chat: {
     flex: 0.56,
     backgroundColor: '#fff',
-    borderRadius: 20,
+    borderRadius: 8,
     padding: 10,
   },
   chatList: {
@@ -651,8 +672,8 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    borderRadius: 10,
-    borderWidth: 2,
+    borderRadius: 8,
+    borderWidth: 1,
     borderColor: '#a4a4a4',
     paddingHorizontal: 5,
     justifyContent: 'center',

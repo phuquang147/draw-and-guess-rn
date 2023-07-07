@@ -1,6 +1,13 @@
 import firestore from '@react-native-firebase/firestore';
 import {useEffect, useState} from 'react';
-import {FlatList, ImageBackground, StyleSheet, Text, View} from 'react-native';
+import {
+  FlatList,
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import colors from '../assets/colors';
@@ -9,6 +16,7 @@ import BackButton from '../components/BackButton';
 import DashedLine from '../components/DashedLine';
 import Topic from '../components/ManageTopicsScreen/Topic';
 import ShadowWrapper from '../components/ShadowWrapper';
+import EmptyList from '../components/EmptyList';
 
 const ManageTopicsScreen = ({navigation, route}) => {
   const [topics, setTopics] = useState([]);
@@ -39,13 +47,20 @@ const ManageTopicsScreen = ({navigation, route}) => {
         </View>
         <View style={styles.content}>
           <ShadowWrapper>
-            <FlatList
-              data={topics}
-              renderItem={({item}) => <Topic topic={item} />}
-              keyExtractor={item => item.id}
-              style={styles.topics}
-              ItemSeparatorComponent={() => <DashedLine />}
-            />
+            {topics.length > 0 ? (
+              <FlatList
+                data={topics}
+                renderItem={({item}) => <Topic topic={item} />}
+                keyExtractor={item => item.id}
+                style={styles.topics}
+                ItemSeparatorComponent={() => <DashedLine />}
+              />
+            ) : (
+              <EmptyList
+                image={require('../assets/images/empty.png')}
+                title={'Hổng có gì cả :)'}
+              />
+            )}
           </ShadowWrapper>
           <ThemedButton
             name="bruce"

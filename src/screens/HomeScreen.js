@@ -1,13 +1,18 @@
 import firestore from '@react-native-firebase/firestore';
-import {Alert, ImageBackground, StyleSheet, Text, View} from 'react-native';
+import {useState} from 'react';
+import {ImageBackground, StyleSheet, Text, View} from 'react-native';
+import AwesomeAlert from 'react-native-awesome-alerts';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import FIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../assets/colors';
 import commonStyles from '../assets/styles/commonStyles';
 
 const HomeScreen = ({navigation, route}) => {
   const {user} = route.params;
+  const [showAlert, setShowAlert] = useState('');
+
   const onCreateRoom = () => {
     navigation.navigate('CreateRoomScreen');
   };
@@ -37,7 +42,6 @@ const HomeScreen = ({navigation, route}) => {
                 .doc(`users/${user.uid}`)
                 .get()
                 .then(userSnapshot => {
-                  console.log(userSnapshot.data());
                   querySnapshot.docs[0].ref
                     .collection('members')
                     .doc(user.uid)
@@ -54,7 +58,6 @@ const HomeScreen = ({navigation, route}) => {
                       roundCount: snapshot.docs[0].data().roundCount,
                     })
                     .then(() => {
-                      console.log('Asss');
                       navigation.navigate('GuessScreen', {
                         roomId: querySnapshot.docs[0].id,
                         user,
@@ -62,7 +65,9 @@ const HomeScreen = ({navigation, route}) => {
                     });
                 });
             });
-        } else Alert.alert('Không còn phòng trống! Vui lòng tạo phòng mới');
+        } else {
+          setShowAlert('Không còn phòng trống! Vui lòng tạo phòng mới');
+        }
       });
   };
 
@@ -122,6 +127,18 @@ const HomeScreen = ({navigation, route}) => {
           <ThemedButton
             name="bruce"
             type="anchor"
+            backgroundColor={colors.yellow}
+            borderColor={colors.darkYellow}
+            backgroundDarker={colors.darkYellow}
+            textFontFamily="icielPony"
+            raiseLevel={5}
+            style={styles.button}
+            onPress={onJoinRoom}>
+            <Text style={commonStyles.buttonText}>Tìm kiếm</Text>
+          </ThemedButton>
+          <ThemedButton
+            name="bruce"
+            type="anchor"
             backgroundColor={colors.pink}
             borderColor={colors.darkPink}
             backgroundDarker={colors.darkPink}
@@ -133,20 +150,36 @@ const HomeScreen = ({navigation, route}) => {
             }}>
             <Text style={commonStyles.buttonText}>Chủ đề</Text>
           </ThemedButton>
-          <ThemedButton
-            name="bruce"
-            type="anchor"
-            backgroundColor={colors.yellow}
-            borderColor="black"
-            backgroundDarker="black"
-            textFontFamily="icielPony"
-            raiseLevel={5}
-            style={styles.button}
-            onPress={onJoinRoom}>
-            <Text style={styles.text}>Tìm kiếm</Text>
-          </ThemedButton>
         </View>
       </ImageBackground>
+      <AwesomeAlert
+        show={!!showAlert}
+        showProgress={false}
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+        onDismiss={() => {
+          setShowAlert(false);
+        }}
+        showConfirmButton={true}
+        onConfirmPressed={() => {
+          setShowAlert('');
+        }}
+        confirmText="OK"
+        confirmButtonColor={colors.green}
+        confirmButtonStyle={{
+          paddingHorizontal: 24,
+          paddingVertical: 8,
+        }}
+        confirmButtonTextStyle={{fontSize: 16}}
+        customView={
+          <View style={styles.alertContainer}>
+            <FIcon name="x-circle" size={50} color={colors.red} />
+            <Text style={{color: '#555', fontSize: 16, textAlign: 'center'}}>
+              {showAlert}
+            </Text>
+          </View>
+        }
+      />
     </SafeAreaView>
   );
 };
@@ -227,5 +260,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderRadius: 100,
     fontSize: 24,
+  },
+  alertContainer: {
+    alignItems: 'center',
+    gap: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
   },
 });

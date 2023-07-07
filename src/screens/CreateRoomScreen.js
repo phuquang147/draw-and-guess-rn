@@ -7,6 +7,8 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../assets/colors';
 import ChatRoomServices from '../services/chatRoomServices';
+import BackButton from '../components/BackButton';
+import commonStyles from '../assets/styles/commonStyles';
 
 const CreateRoomScreen = ({navigation, route}) => {
   const [selectedNumber, setSelectedNumber] = useState(10);
@@ -113,27 +115,9 @@ const CreateRoomScreen = ({navigation, route}) => {
     <SafeAreaView style={styles.container}>
       <ImageBackground
         style={styles.background}
-        source={{
-          uri: 'https://st3.depositphotos.com/6741230/13012/v/950/depositphotos_130128092-stock-illustration-doodles-seamless-pattern-vector-set.jpg',
-        }}>
+        source={require('../assets/images/bg.jpg')}>
         <View style={styles.header}>
-          <Image
-            style={styles.logo}
-            source={require('../assets/images/splash.png')}
-          />
-          <ThemedButton
-            name="bruce"
-            type="anchor"
-            backgroundColor={colors.red}
-            borderColor="black"
-            backgroundDarker="black"
-            textFontFamily="icielPony"
-            borderRadius={100}
-            width={null}
-            raiseLevel={5}
-            onPress={onClose}>
-            <Icon name="close" size={24} color="white" />
-          </ThemedButton>
+          <BackButton goBackKey="HomeScreen" />
         </View>
         <View style={styles.content}>
           <View style={styles.avatarContainer}>
@@ -145,7 +129,7 @@ const CreateRoomScreen = ({navigation, route}) => {
               textFontFamily="icielPony"
               borderRadius={100}
               width={null}
-              raiseLevel={5}
+              raiseLevel={2}
               onPress={handlePrevTopic}
               disabled={selectedTopic === 0 || selectedTopic === null}>
               <Icon name="arrow-left" size={24} color="black" />
@@ -167,7 +151,7 @@ const CreateRoomScreen = ({navigation, route}) => {
               textFontFamily="icielPony"
               borderRadius={100}
               width={null}
-              raiseLevel={5}
+              raiseLevel={2}
               onPress={handleNextTopic}
               disabled={
                 selectedTopic === topics.length - 1 || selectedTopic === null
@@ -182,7 +166,8 @@ const CreateRoomScreen = ({navigation, route}) => {
                 onValueChange={(itemValue, itemIndex) =>
                   setSelectedNumber(itemValue)
                 }
-                style={styles.picker}>
+                style={styles.picker}
+                dropdownIconColor={colors.grey}>
                 <Picker.Item
                   style={styles.pickerItemText}
                   label="5 Người"
@@ -206,7 +191,8 @@ const CreateRoomScreen = ({navigation, route}) => {
                 onValueChange={(itemValue, itemIndex) =>
                   setSelectedPoint(itemValue)
                 }
-                style={styles.picker}>
+                style={styles.picker}
+                dropdownIconColor={colors.grey}>
                 <Picker.Item
                   style={styles.pickerItemText}
                   label="100 Điểm"
@@ -235,25 +221,25 @@ const CreateRoomScreen = ({navigation, route}) => {
             name="bruce"
             type="anchor"
             backgroundColor={colors.green}
-            borderColor="black"
-            backgroundDarker="black"
+            borderColor={colors.darkGreen}
+            backgroundDarker={colors.darkGreen}
             textFontFamily="icielPony"
             raiseLevel={5}
             style={styles.button}
             onPress={handleCreateRoom}>
-            <Text style={styles.text}>Tạo phòng</Text>
+            <Text style={commonStyles.buttonText}>Tạo phòng</Text>
           </ThemedButton>
           <ThemedButton
             name="bruce"
             type="anchor"
             backgroundColor={colors.pink}
-            borderColor="black"
-            backgroundDarker="black"
+            borderColor={colors.darkPink}
+            backgroundDarker={colors.darkPink}
             textFontFamily="icielPony"
             raiseLevel={5}
             style={styles.button}
             onPress={goBack}>
-            <Text style={styles.text}>Trở về</Text>
+            <Text style={commonStyles.buttonText}>Trở về</Text>
           </ThemedButton>
         </View>
       </ImageBackground>
@@ -316,25 +302,25 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     backgroundColor: '#ced4da',
     borderRadius: 100,
-    borderWidth: 4,
-    borderColor: 'black',
+    borderWidth: 1,
+    borderColor: '#999',
   },
   picker: {
     flex: 1,
-    // marginVertical: 30,
-    // marginHorizontal: 20,
-    borderWidth: 4,
-    borderColor: 'black',
+    borderWidth: 1,
+    color: 'black',
+    borderColor: '#ccc',
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: 'white',
     textAlign: 'center',
-    borderRadius: 100,
-    fontSize: 24,
+    borderRadius: 8,
+    fontSize: 20,
   },
   pickerContainer: {
-    borderWidth: 4,
-    borderRadius: 100,
+    color: 'black',
+    borderWidth: 1,
+    borderRadius: 8,
     overflow: 'hidden',
     width: '60%',
     justifyContent: 'center',
@@ -348,6 +334,6 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   pickerItemText: {
-    fontSize: 24,
+    fontSize: 20,
   },
 });

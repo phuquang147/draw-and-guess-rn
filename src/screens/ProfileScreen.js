@@ -1,37 +1,35 @@
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import storage from '@react-native-firebase/storage';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useEffect, useState} from 'react';
 import {
+  Alert,
   Image,
   ImageBackground,
   StyleSheet,
   Text,
-  View,
-  Alert,
   TextInput,
   TouchableOpacity,
+  View,
 } from 'react-native';
+import AwesomeAlert from 'react-native-awesome-alerts';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Octicons';
+import FIcon from 'react-native-vector-icons/Feather';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import Icon from 'react-native-vector-icons/Octicons';
 import colors from '../assets/colors';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import WordSelectionModal from '../components/WordSelectionModal';
-import PhotoSelectionModal from '../components/PhotoSelectionModal';
-import BackButton from '../components/BackButton';
 import commonStyles from '../assets/styles/commonStyles';
+import BackButton from '../components/BackButton';
+import PhotoSelectionModal from '../components/PhotoSelectionModal';
 
 const ProfileScreen = ({navigation, route}) => {
   const {userId} = route.params;
   const [user, setUser] = useState();
   const [editable, setEditable] = useState(false);
   const [name, setName] = useState();
-  // const [photo, setPhoto] = useState('');
   const [visibleModal, setVisiableModal] = useState(false);
+  const [showAlert, setShowAlert] = useState('');
 
   useEffect(() => {
     let subscribeUser = () => {};
@@ -43,7 +41,6 @@ const ProfileScreen = ({navigation, route}) => {
         .onSnapshot(documentSnapshot => {
           setUser(documentSnapshot.data());
           setName(documentSnapshot.data().name);
-          // setPhoto(documentSnapshot.data().photo);
         });
     }
     return () => {
@@ -77,7 +74,7 @@ const ProfileScreen = ({navigation, route}) => {
         name: name,
       })
       .then(() => {
-        Alert.alert('Thay đổi thành công!');
+        setShowAlert('Cập nhật thành công');
         setEditable(false);
       });
   };
@@ -94,7 +91,7 @@ const ProfileScreen = ({navigation, route}) => {
         photo: url,
       })
       .then(() => {
-        Alert.alert('Thay đổi thành công!');
+        setShowAlert('Cập nhật thành công');
         setVisiableModal(false);
       });
   };
@@ -120,7 +117,10 @@ const ProfileScreen = ({navigation, route}) => {
               </TouchableOpacity>
               <View style={styles.textInputContainter}>
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    editable ? {color: 'black'} : {color: '#aaa'},
+                  ]}
                   value={name}
                   editable={editable}
                   onChangeText={value => onNameChange(value)}
@@ -205,6 +205,31 @@ const ProfileScreen = ({navigation, route}) => {
         setVisiable={setVisiableModal}
         onUploadSuccess={handleUploadSuccess}
       />
+      <AwesomeAlert
+        show={!!showAlert}
+        showProgress={false}
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+        onDismiss={() => {
+          setShowAlert(false);
+        }}
+        showConfirmButton={true}
+        onConfirmPressed={() => {
+          setShowAlert(null);
+        }}
+        confirmText="OK"
+        confirmButtonColor={colors.green}
+        confirmButtonStyle={{
+          paddingHorizontal: 24,
+          paddingVertical: 8,
+        }}
+        customView={
+          <View style={styles.alertContainer}>
+            <FIcon name="check-circle" size={50} color={colors.lightGreen} />
+            <Text style={{color: '#555', fontSize: 16}}>{showAlert}</Text>
+          </View>
+        }
+      />
     </SafeAreaView>
   );
 };
@@ -222,7 +247,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     position: 'absolute',
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(0,0,0,0.25)',
     width: '100%',
     height: '100%',
   },
@@ -235,8 +260,6 @@ const styles = StyleSheet.create({
     borderRadius: 19,
   },
   header: {
-    // flex: 1,
-    // backgroundColor: "red",
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 10,
@@ -268,8 +291,8 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     backgroundColor: '#ced4da',
     borderRadius: 100,
-    borderWidth: 1,
-    borderColor: 'black',
+    borderWidth: 2,
+    borderColor: colors.darkGrey,
   },
   input: {
     height: 50,
@@ -279,7 +302,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: 'white',
     textAlign: 'center',
-    fontSize: 24,
+    fontSize: 20,
     borderRadius: 8,
   },
   changeBtnContainer: {
@@ -297,5 +320,11 @@ const styles = StyleSheet.create({
   buttonContainer: {
     position: 'absolute',
     right: -55,
+  },
+  alertContainer: {
+    alignItems: 'center',
+    gap: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
   },
 });

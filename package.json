@@ -27,6 +27,7 @@
     "axios": "^1.4.0",
     "react": "18.2.0",
     "react-native": "0.71.8",
+    "react-native-awesome-alerts": "^2.0.0",
     "react-native-image-picker": "^5.4.0",
     "react-native-progress": "^5.0.0",
     "react-native-really-awesome-button": "^2.0.4",

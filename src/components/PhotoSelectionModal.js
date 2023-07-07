@@ -31,7 +31,6 @@ const PhotoSelectionModal = ({visible, setVisiable, onUploadSuccess}) => {
         animationType="fade"
         style={styles.overlayView}
         onPress={() => onClose()}>
-        {/* <Pressable style={{backgroundColor: 'red'}} onPressOut={onCamera()}> */}
         <TouchableWithoutFeedback style={{backgroundColor: 'red'}}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Chọn ảnh từ </Text>
@@ -39,8 +38,8 @@ const PhotoSelectionModal = ({visible, setVisiable, onUploadSuccess}) => {
               name="bruce"
               type="anchor"
               backgroundColor={colors.blue}
-              borderColor="black"
-              backgroundDarker="black"
+              borderColor={colors.darkBlue}
+              backgroundDarker={colors.darkBlue}
               textFontFamily="icielPony"
               raiseLevel={5}
               style={styles.button}
@@ -55,8 +54,8 @@ const PhotoSelectionModal = ({visible, setVisiable, onUploadSuccess}) => {
               name="bruce"
               type="anchor"
               backgroundColor={colors.green}
-              borderColor="black"
-              backgroundDarker="black"
+              borderColor={colors.darkGreen}
+              backgroundDarker={colors.darkGreen}
               textFontFamily="icielPony"
               raiseLevel={5}
               style={styles.button}
@@ -79,14 +78,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
-    // backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalView: {
     backgroundColor: 'white',
-    borderTopStartRadius: 16,
-    borderTopEndRadius: 16,
-
-    borderWidth: 2,
+    borderTopStartRadius: 8,
+    borderTopEndRadius: 8,
     paddingVertical: 20,
     paddingHorizontal: 35,
     alignItems: 'center',

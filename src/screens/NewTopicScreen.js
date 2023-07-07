@@ -12,9 +12,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import AwesomeAlert from 'react-native-awesome-alerts';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import uuid from 'react-native-uuid';
+import FIcon from 'react-native-vector-icons/Feather';
 import OctIcon from 'react-native-vector-icons/Octicons';
 import colors from '../assets/colors';
 import commonStyles from '../assets/styles/commonStyles';
@@ -30,6 +32,8 @@ const NewTopicScreen = ({navigation, route}) => {
   const [visibleModal, setVisiableModal] = useState(false);
   const [image, setImage] = useState('');
   const [name, setName] = useState('');
+  const [showAlert, setShowAlert] = useState(null);
+  const [showConfirmAlert, setShowConfirmAlert] = useState('');
 
   useEffect(() => {
     if (topic) {
@@ -60,12 +64,16 @@ const NewTopicScreen = ({navigation, route}) => {
 
   const handleUploadSuccess = url => {
     setImage(url);
+    setVisiableModal(false);
   };
 
   const handleCreateTopic = () => {
-    if (image === '') Alert.alert('Vui lòng chọn ảnh');
-    else if (name.trim().length === 0) Alert.alert('Vui lòng nhập tên');
-    else if (words.length === 0) Alert.alert('Vui lòng thêm từ');
+    if (image === '')
+      setShowAlert({message: 'Vui lòng chọn ảnh', type: 'error'});
+    else if (name.trim().length === 0)
+      setShowAlert({message: 'Vui lòng nhập tên chủ đề', type: 'error'});
+    else if (words.length === 0)
+      setShowAlert({message: 'Vui lòng thêm từ vào chủ đề', type: 'error'});
     else {
       firestore()
         .collection('topics')
@@ -82,9 +90,12 @@ const NewTopicScreen = ({navigation, route}) => {
   };
 
   const handleUpdateTopic = () => {
-    if (image === '') Alert.alert('Vui lòng chọn ảnh');
-    else if (name.trim().length === 0) Alert.alert('Vui lòng nhập tên');
-    else if (words.length === 0) Alert.alert('Vui lòng thêm từ');
+    if (image === '')
+      setShowAlert({message: 'Vui lòng chọn ảnh', type: 'error'});
+    else if (name.trim().length === 0)
+      setShowAlert({message: 'Vui lòng nhập tên chủ đề', type: 'error'});
+    else if (words.length === 0)
+      setShowAlert({message: 'Vui lòng thêm từ vào chủ đề', type: 'error'});
     else {
       firestore()
         .collection('topics')
@@ -96,7 +107,10 @@ const NewTopicScreen = ({navigation, route}) => {
           words: words.map(word => word.value),
         })
         .then(() => {
-          handleBack();
+          setShowAlert({
+            message: 'Chỉnh sửa chủ đề thành công',
+            type: 'success',
+          });
         });
     }
   };
@@ -198,7 +212,9 @@ const NewTopicScreen = ({navigation, route}) => {
                 raiseLevel={5}
                 style={styles.button}
                 width={120}
-                onPress={handleDeleteTopic}>
+                onPress={() => {
+                  setShowConfirmAlert('Bạn có muốn xóa chủ đề này?');
+                }}>
                 <Text style={commonStyles.buttonText}>Xóa</Text>
               </ThemedButton>
             )}
@@ -224,6 +240,79 @@ const NewTopicScreen = ({navigation, route}) => {
         visible={visibleModal}
         setVisiable={setVisiableModal}
         onUploadSuccess={handleUploadSuccess}
+      />
+      <AwesomeAlert
+        show={!!showAlert}
+        showProgress={false}
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+        onDismiss={() => {
+          setShowAlert(null);
+        }}
+        contentContainerStyle={{borderRadius: 8}}
+        showConfirmButton={true}
+        onConfirmPressed={() => {
+          setShowAlert(null);
+        }}
+        confirmText="OK"
+        confirmButtonColor={colors.green}
+        confirmButtonStyle={{
+          paddingHorizontal: 24,
+          paddingVertical: 8,
+        }}
+        confirmButtonTextStyle={{fontSize: 16}}
+        customView={
+          <View style={commonStyles.alertContainer}>
+            <FIcon
+              name={showAlert?.type === 'error' ? 'x-circle' : 'check-circle'}
+              size={50}
+              color={showAlert?.type === 'error' ? colors.red : colors.green}
+            />
+            <Text style={{color: '#555', fontSize: 16, textAlign: 'center'}}>
+              {showAlert?.message}
+            </Text>
+          </View>
+        }
+      />
+      <AwesomeAlert
+        show={!!showConfirmAlert}
+        showProgress={false}
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+        onDismiss={() => {
+          setShowConfirmAlert('');
+        }}
+        contentContainerStyle={{borderRadius: 8}}
+        showConfirmButton={true}
+        onConfirmPressed={() => {
+          handleDeleteTopic();
+        }}
+        confirmText="Xác nhận"
+        confirmButtonColor={colors.green}
+        confirmButtonStyle={{
+          paddingHorizontal: 24,
+          paddingVertical: 8,
+        }}
+        confirmButtonTextStyle={{fontSize: 16}}
+        showCancelButton={true}
+        onCancelPressed={() => {
+          setShowConfirmAlert('');
+        }}
+        cancelText="Hủy"
+        cancelButtonColor={colors.grey}
+        cancelButtonStyle={{
+          paddingHorizontal: 24,
+          paddingVertical: 8,
+        }}
+        cancelButtonTextStyle={{fontSize: 16}}
+        customView={
+          <View style={commonStyles.alertContainer}>
+            <FIcon name="warning-outline" size={50} color={colors.yellow} />
+            <Text style={{color: '#555', fontSize: 16, textAlign: 'center'}}>
+              {showConfirmAlert}
+            </Text>
+          </View>
+        }
       />
     </SafeAreaView>
   );
@@ -305,7 +394,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
     borderRadius: 100,
     borderWidth: 1,
-    borderColor: colors.lightBlue,
+    borderColor: colors.darkGrey,
   },
   avatarContainer: {
     paddingVertical: 24,
@@ -332,7 +421,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     position: 'absolute',
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(0,0,0,0.25)',
     width: '100%',
     height: '100%',
   },

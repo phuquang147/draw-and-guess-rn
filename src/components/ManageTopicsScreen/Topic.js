@@ -1,34 +1,31 @@
+import {useNavigation} from '@react-navigation/native';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import {ThemedButton} from 'react-native-really-awesome-button';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../assets/colors';
-import {useNavigation} from '@react-navigation/native';
 
 const Topic = ({topic}) => {
   const navigation = useNavigation();
 
   return (
-    <Pressable onPress={() => {}}>
-      <View style={styles.container}>
-        <View style={styles.infoContainer}>
-          <Image
-            style={styles.image}
-            source={{
-              uri: topic.image,
-            }}
-          />
-          <Text style={styles.name}>{topic.name}</Text>
-        </View>
-        <Pressable
-          style={styles.editButton}
-          android_ripple={{color: '#84accc', radius: 20}}
-          onPress={() => {
-            navigation.navigate('NewTopicScreen', {topic});
-          }}>
-          <Icon name="circle-edit-outline" size={24} color={colors.darkBlue} />
-        </Pressable>
+    <View style={styles.container}>
+      <View style={styles.infoContainer}>
+        <Image
+          style={styles.image}
+          source={{
+            uri: topic.image,
+          }}
+        />
+        <Text style={styles.name}>{topic.name}</Text>
       </View>
-    </Pressable>
+      <Pressable
+        style={styles.editButton}
+        android_ripple={{color: '#84accc', radius: 20}}
+        onPress={() => {
+          navigation.navigate('NewTopicScreen', {topic});
+        }}>
+        <Icon name="circle-edit-outline" size={24} color={colors.darkBlue} />
+      </Pressable>
+    </View>
   );
 };
 
@@ -52,6 +49,8 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.grey,
   },
   name: {
     color: 'black',
