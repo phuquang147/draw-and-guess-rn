@@ -182,7 +182,7 @@ exports.listenToRoomStateChange = functions
       }, 1000);
     }
 
-    const resetMembers = () => {
+    const resetMembersEndRound = () => {
       // Reset thông tin của member
       admin
         .firestore()
@@ -200,7 +200,7 @@ exports.listenToRoomStateChange = functions
     };
 
     const resetData = () => {
-      resetMembers();
+      resetMembersEndRound();
       // Cập nhật trạng thái phòng
       admin.firestore().doc(`rooms/${roomId}`).update({
         state: 'endRound',
@@ -240,7 +240,17 @@ exports.listenToRoomStateChange = functions
                     .count()
                     .get()
                     .then(snapshot => {
-                      if (snapshot.data().count >= 2) resetData();
+                      admin
+                        .firestore()
+                        .doc(`rooms/${roomId}`)
+                        .get()
+                        .then(roomSnapshot => {
+                          if (
+                            snapshot.data().count >= 2 &&
+                            roomSnapshot.data().state !== 'waiting'
+                          )
+                            resetData();
+                        });
                     });
                 } else {
                   clearInterval(interval);
@@ -255,7 +265,23 @@ exports.listenToRoomStateChange = functions
 
     // Khi phòng chuyển qua trạng thái waiting
     if (oldRoomState !== newRoomState && newRoomState === 'waiting') {
-      resetMembers();
+      // Reset members
+      admin
+        .firestore()
+        .collection(`rooms/${roomId}/members`)
+        .get()
+        .then(snapshot => {
+          snapshot.docs.forEach(doc => {
+            doc.ref.update({
+              isCorrect: false,
+              isChoosing: false,
+              isDrawing: false,
+              roundCount: 0,
+              points: 0,
+            });
+          });
+        });
+
       // Reset phòng
       admin.firestore().doc(`rooms/${roomId}`).update({
         correctCount: 0,
@@ -356,4 +382,43 @@ exports.listenToMemberUpdate = functions
             });
         });
     }
+  });
+
+exports.listenToMemberCreate = functions
+  .region('asia-east2')
+  .firestore.document('rooms/{roomId}/members/{memberId}')
+  .onCreate((snapshot, context) => {
+    const {roomId} = context.params;
+
+    admin
+      .firestore()
+      .collection(`rooms/${roomId}/members`)
+      .count()
+      .get()
+      .then(membersSnapshot => {
+        admin
+          .firestore()
+          .doc(`rooms/${roomId}`)
+          .get()
+          .then(roomSnapshot => {
+            if (
+              roomSnapshot.data().maxMember === membersSnapshot.data().count
+            ) {
+              admin.firestore().doc(`rooms/${roomId}`).update({
+                canJoin: false,
+              });
+            }
+          });
+      });
+  });
+
+exports.listenToMemberDelete = functions
+  .region('asia-east2')
+  .firestore.document('rooms/{roomId}/members/{memberId}')
+  .onDelete((snapshot, context) => {
+    const {roomId} = context.params;
+
+    admin.firestore().doc(`rooms/${roomId}`).update({
+      canJoin: true,
+    });
   });
