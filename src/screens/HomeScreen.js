@@ -87,6 +87,7 @@ const HomeScreen = ({navigation, route}) => {
             borderRadius={100}
             width={null}
             raiseLevel={2}
+            paddingHorizontal={18}
             onPress={signOut}>
             <Icon name="user" size={24} color="white" />
           </ThemedButton>

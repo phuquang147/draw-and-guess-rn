@@ -159,6 +159,9 @@ const CreateRoomScreen = ({navigation, route}) => {
               <Icon name="arrow-right" size={24} color="black" />
             </ThemedButton>
           </View>
+          <Text style={[styles.text, {fontSize: 24, marginTop: 4}]}>
+            {topics[selectedTopic]?.name}
+          </Text>
           <View style={styles.pickersContainer}>
             <View style={styles.pickerContainer}>
               <Picker
@@ -286,7 +289,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   avatarContainer: {
     width: '100%',
@@ -325,7 +328,7 @@ const styles = StyleSheet.create({
     width: '60%',
     justifyContent: 'center',
     height: 50,
-    marginVertical: 10,
+    marginVertical: 6,
     marginHorizontal: 20,
   },
   pickersContainer: {

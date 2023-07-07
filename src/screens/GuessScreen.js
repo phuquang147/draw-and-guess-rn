@@ -229,8 +229,9 @@ const renderDrawArea = (user, room, members) => {
                 borderRadius={100}
                 width={null}
                 onPress={handleHint}
+                paddingHorizontal={18}
                 disabled={word?.hintIndexes?.length >= 2 || !room?.canHint}
-                raiseLevel={5}>
+                raiseLevel={2}>
                 <Icon name="lightbulb-o" size={30} color="black" />
               </ThemedButton>
             </View>
