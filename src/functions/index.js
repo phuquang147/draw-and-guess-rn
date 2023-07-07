@@ -52,15 +52,23 @@ exports.listenToRoomStateChange = functions
             .limit(1)
             .get()
             .then(snapshot => {
-              if (snapshot.docs[0].data().points >= endPoint) {
-                admin.firestore().doc(`rooms/${roomId}`).update({
-                  state: 'endGame',
+              admin
+                .firestore()
+                .doc(`rooms/${roomId}`)
+                .get()
+                .then(roomSnapshot => {
+                  if (roomSnapshot.data().state !== 'waiting') {
+                    if (snapshot.docs[0].data().points >= endPoint) {
+                      admin.firestore().doc(`rooms/${roomId}`).update({
+                        state: 'endGame',
+                      });
+                    } else {
+                      admin.firestore().doc(`rooms/${roomId}`).update({
+                        state: 'choosing',
+                      });
+                    }
+                  }
                 });
-              } else {
-                admin.firestore().doc(`rooms/${roomId}`).update({
-                  state: 'choosing',
-                });
-              }
             });
           admin.database().ref(`/rooms/${roomId}-endRound`).remove();
         }
@@ -84,29 +92,38 @@ exports.listenToRoomStateChange = functions
         if (countDownTime <= 0) {
           clearInterval(interval);
 
-          // Reset members
           admin
             .firestore()
-            .collection(`rooms/${roomId}/members`)
+            .doc(`rooms/${roomId}`)
             .get()
-            .then(snapshot => {
-              snapshot.docs.forEach(doc => {
-                doc.ref.update({
-                  isCorrect: false,
-                  isChoosing: false,
-                  isDrawing: false,
-                  points: 0,
+            .then(roomSnapshot => {
+              if (roomSnapshot.data().state !== 'waiting') {
+                // Reset members
+                admin
+                  .firestore()
+                  .collection(`rooms/${roomId}/members`)
+                  .get()
+                  .then(snapshot => {
+                    snapshot.docs.forEach(doc => {
+                      doc.ref.update({
+                        isCorrect: false,
+                        isChoosing: false,
+                        isDrawing: false,
+                        points: 0,
+                      });
+                    });
+                  });
+
+                // Reset room
+                admin.firestore().collection('rooms').doc(roomId).update({
+                  currentMember: null,
+                  currentWord: null,
+                  correctCount: 0,
+                  state: 'choosing',
                 });
-              });
+              }
+              admin.database().ref(`/rooms/${roomId}-endGame`).remove();
             });
-          // Reset room
-          admin.firestore().collection('rooms').doc(roomId).update({
-            currentMember: null,
-            currentWord: null,
-            correctCount: 0,
-            state: 'choosing',
-          });
-          admin.database().ref(`/rooms/${roomId}-endGame`).remove();
         }
       }, 1000);
     }
@@ -152,6 +169,55 @@ exports.listenToRoomStateChange = functions
             roundCount: admin.firestore.FieldValue.increment(1),
             isChoosing: true,
           });
+
+          admin
+            .database()
+            .ref(`/rooms/${roomId}-choosing-${newRoundCount}`)
+            .set({remaining: 10000});
+
+          let countDownTime = 10000;
+
+          // Countdown
+          const interval = setInterval(() => {
+            countDownTime -= 1000;
+
+            admin
+              .database()
+              .ref(`/rooms/${roomId}-choosing-${newRoundCount}`)
+              .set({remaining: countDownTime});
+
+            if (countDownTime <= 0) {
+              {
+                admin
+                  .database()
+                  .ref(`/rooms/${roomId}-choosing-${newRoundCount + 1}`)
+                  .once('value')
+                  .then(snapshot => {
+                    //Nếu có tiếp theo thì clear
+                    if (snapshot.val()) {
+                      clearInterval(interval);
+                    } else {
+                      admin
+                        .firestore()
+                        .doc(`rooms/${roomId}`)
+                        .get()
+                        .then(roomSnapshot => {
+                          if (roomSnapshot.data().state === 'choosing') {
+                            roomSnapshot.ref.update({state: 'skipping'});
+                            resetMembersEndRound();
+                          }
+                        });
+                      clearInterval(interval);
+                    }
+                  });
+
+                admin
+                  .database()
+                  .ref(`/rooms/${roomId}-choosing-${newRoundCount}`)
+                  .remove();
+              }
+            }
+          }, 1000);
         });
     }
 
@@ -173,9 +239,17 @@ exports.listenToRoomStateChange = functions
         if (countDownTime <= 0) {
           clearInterval(interval);
 
-          admin.firestore().doc(`rooms/${roomId}`).update({
-            state: 'choosing',
-          });
+          admin
+            .firestore()
+            .doc(`rooms/${roomId}`)
+            .get()
+            .then(roomSnapshot => {
+              if (roomSnapshot.data().state !== 'waiting') {
+                admin.firestore().doc(`rooms/${roomId}`).update({
+                  state: 'choosing',
+                });
+              }
+            });
 
           admin.database().ref(`/rooms/${roomId}-skipped`).remove();
         }
