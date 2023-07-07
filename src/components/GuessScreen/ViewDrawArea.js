@@ -2,6 +2,9 @@ import {FastRoom} from '@netless/react-native-fastboard';
 import {StyleSheet} from 'react-native';
 
 const ViewDrawArea = ({user, room}) => {
+  const viewingBoard = value => {
+    value.room.setWritable(false);
+  };
   return (
     <FastRoom
       sdkParams={{
@@ -19,6 +22,7 @@ const ViewDrawArea = ({user, room}) => {
         showRedoUndo: false,
         showPageIndicator: false,
       }}
+      joinRoomSuccessCallback={FastRoomObject => viewingBoard(FastRoomObject)}
     />
   );
 };

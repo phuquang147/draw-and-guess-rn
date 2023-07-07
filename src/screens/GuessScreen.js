@@ -107,6 +107,7 @@ const renderDrawArea = (user, room, members) => {
         return (
           <View style={styles.startButtonWrapper}>
             <Pressable
+              android_ripple={{color: '#ccc', radius: 14}}
               style={styles.icon}
               onPress={() => {
                 setRoomInfoModalVisible(true);
@@ -148,6 +149,7 @@ const renderDrawArea = (user, room, members) => {
             <Text style={styles.buttonText}>Vui lòng chờ...</Text>
             <Pressable
               style={styles.icon}
+              android_ripple={{color: '#ccc', radius: 14}}
               onPress={() => {
                 setRoomInfoModalVisible(true);
               }}>
@@ -190,6 +192,18 @@ const renderDrawArea = (user, room, members) => {
       if (user.isDrawing) {
         return (
           <View style={{flex: 1}}>
+            <Pressable
+              style={styles.icon}
+              android_ripple={{color: '#ccc', radius: 14}}
+              onPress={() => {
+                setRoomInfoModalVisible(true);
+              }}>
+              <Ionicon
+                name="information-circle-outline"
+                color={colors.blue}
+                size={32}
+              />
+            </Pressable>
             <View
               style={{
                 flexDirection: 'row',
@@ -234,11 +248,29 @@ const renderDrawArea = (user, room, members) => {
                 <Icon name="lightbulb-o" size={30} color="black" />
               </ThemedButton>
             </View>
+            {roomInfoModalVisible && (
+              <RoomInfoModal
+                room={room}
+                onClose={() => setRoomInfoModalVisible(false)}
+              />
+            )}
           </View>
         );
       } else
         return (
           <View style={{flex: 1}}>
+            <Pressable
+              style={styles.icon}
+              android_ripple={{color: '#ccc', radius: 14}}
+              onPress={() => {
+                setRoomInfoModalVisible(true);
+              }}>
+              <Ionicon
+                name="information-circle-outline"
+                color={colors.blue}
+                size={32}
+              />
+            </Pressable>
             <View
               style={{
                 flexDirection: 'row',
@@ -278,6 +310,12 @@ const renderDrawArea = (user, room, members) => {
                 height: '100%',
                 zIndex: 100,
               }}></View>
+            {roomInfoModalVisible && (
+              <RoomInfoModal
+                room={room}
+                onClose={() => setRoomInfoModalVisible(false)}
+              />
+            )}
           </View>
         );
     }
@@ -595,7 +633,7 @@ export default GuessScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#7b53ff',
+    backgroundColor: '#6b46e6',
     padding: 5,
     paddingBottom: 15,
     flexDirection: 'column',
@@ -625,7 +663,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   playerList: {
-    backgroundColor: '#7b53ff',
+    backgroundColor: '#6b46e6',
   },
   players: {
     flex: 0.44,
@@ -662,6 +700,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
+    paddingHorizontal: 10,
   },
   buttonText: {
     fontFamily: 'icielPony',
@@ -683,7 +722,8 @@ const styles = StyleSheet.create({
   },
   icon: {
     position: 'absolute',
-    right: 16,
-    top: 16,
+    right: 8,
+    top: 8,
+    zIndex: 1000,
   },
 });

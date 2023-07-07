@@ -4,6 +4,7 @@ import {Dimensions, Modal, StyleSheet, Text, View} from 'react-native';
 import * as Progress from 'react-native-progress';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import colors from '../assets/colors';
+import commonStyles from '../assets/styles/commonStyles';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -44,27 +45,31 @@ const WordSelectionModal = ({room, onSkip, onDraw, roomId}) => {
                 name="bruce"
                 type="anchor"
                 backgroundColor={colors.blue}
-                borderColor="black"
-                backgroundDarker="black"
+                borderColor={colors.darkBlue}
+                backgroundDarker={colors.darkBlue}
                 textFontFamily="icielPony"
                 raiseLevel={5}
                 width={windowWidth * 0.3}
                 style={styles.button}
-                onPress={onSkip}>
-                <Text style={styles.text}>Bỏ lượt</Text>
+                onPress={() => onSkip()}>
+                <Text style={[commonStyles.buttonText, {fontSize: 20}]}>
+                  Bỏ lượt
+                </Text>
               </ThemedButton>
               <ThemedButton
                 name="bruce"
                 type="anchor"
                 backgroundColor={colors.green}
-                borderColor="black"
-                backgroundDarker="black"
+                borderColor={colors.darkGreen}
+                backgroundDarker={colors.darkGreen}
                 textFontFamily="icielPony"
                 raiseLevel={5}
                 width={windowWidth * 0.3}
                 style={styles.button}
-                onPress={onDraw}>
-                <Text style={styles.text}>Vẽ</Text>
+                onPress={() => onDraw()}>
+                <Text style={[commonStyles.buttonText, {fontSize: 20}]}>
+                  Vẽ
+                </Text>
               </ThemedButton>
             </View>
             <Progress.Bar
@@ -90,24 +95,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.25)',
   },
   modalView: {
     margin: 20,
     backgroundColor: 'white',
-    borderRadius: 16,
-    borderWidth: 2,
+    borderRadius: 8,
     paddingTop: 35,
     paddingHorizontal: 35,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+
     marginHorizontal: 20,
     width: windowWidth * 0.9,
   },
@@ -121,12 +119,13 @@ const styles = StyleSheet.create({
   modalText: {
     fontFamily: 'icielPony',
     fontSize: 20,
+    color: 'black',
   },
 
   keyWord: {
     marginVertical: 15,
     fontFamily: 'icielPony',
-    fontSize: 30,
+    fontSize: 26,
     color: 'black',
   },
 
