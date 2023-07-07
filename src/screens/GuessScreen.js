@@ -700,6 +700,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
+    paddingHorizontal: 10,
   },
   buttonText: {
     fontFamily: 'icielPony',
