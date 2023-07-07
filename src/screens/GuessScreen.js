@@ -190,6 +190,17 @@ const renderDrawArea = (user, room, members) => {
       if (user.isDrawing) {
         return (
           <View style={{flex: 1}}>
+            <Pressable
+              style={styles.icon}
+              onPress={() => {
+                setRoomInfoModalVisible(true);
+              }}>
+              <Ionicon
+                name="information-circle-outline"
+                color={colors.blue}
+                size={32}
+              />
+            </Pressable>
             <View
               style={{
                 flexDirection: 'row',
@@ -234,11 +245,28 @@ const renderDrawArea = (user, room, members) => {
                 <Icon name="lightbulb-o" size={30} color="black" />
               </ThemedButton>
             </View>
+            {roomInfoModalVisible && (
+              <RoomInfoModal
+                room={room}
+                onClose={() => setRoomInfoModalVisible(false)}
+              />
+            )}
           </View>
         );
       } else
         return (
           <View style={{flex: 1}}>
+            <Pressable
+              style={styles.icon}
+              onPress={() => {
+                setRoomInfoModalVisible(true);
+              }}>
+              <Ionicon
+                name="information-circle-outline"
+                color={colors.blue}
+                size={32}
+              />
+            </Pressable>
             <View
               style={{
                 flexDirection: 'row',
@@ -278,6 +306,12 @@ const renderDrawArea = (user, room, members) => {
                 height: '100%',
                 zIndex: 100,
               }}></View>
+            {roomInfoModalVisible && (
+              <RoomInfoModal
+                room={room}
+                onClose={() => setRoomInfoModalVisible(false)}
+              />
+            )}
           </View>
         );
     }
@@ -683,7 +717,8 @@ const styles = StyleSheet.create({
   },
   icon: {
     position: 'absolute',
-    right: 16,
-    top: 16,
+    right: 8,
+    top: 8,
+    zIndex: 1000,
   },
 });

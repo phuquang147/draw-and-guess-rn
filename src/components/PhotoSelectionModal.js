@@ -27,11 +27,8 @@ const PhotoSelectionModal = ({visible, setVisiable, onUploadSuccess}) => {
 
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
-      <Pressable
-        animationType="fade"
-        style={styles.overlayView}
-        onPress={() => onClose()}>
-        <TouchableWithoutFeedback style={{backgroundColor: 'red'}}>
+      <Pressable style={styles.overlayView} onPress={() => onClose()}>
+        <TouchableWithoutFeedback>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Chọn ảnh từ </Text>
             <ThemedButton

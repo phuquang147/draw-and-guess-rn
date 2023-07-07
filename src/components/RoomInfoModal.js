@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableWithoutFeedback,
   Pressable,
 } from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
@@ -33,8 +34,8 @@ const RoomInfoModal = ({room, onClose}) => {
 
   return (
     <Modal animationType="fade" transparent={true} visible={true}>
-      <View style={styles.overlayView}>
-        <View>
+      <Pressable style={styles.overlayView} onPress={() => onClose()}>
+        <TouchableWithoutFeedback>
           <View style={styles.modalView}>
             <Text style={styles.title}>Thông tin phòng</Text>
             <View style={styles.roomInfo}>
@@ -99,8 +100,8 @@ const RoomInfoModal = ({room, onClose}) => {
               </ThemedButton>
             </View>
           </View>
-        </View>
-      </View>
+        </TouchableWithoutFeedback>
+      </Pressable>
     </Modal>
   );
 };
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    width: windowWidth * 0.95,
+    width: windowWidth * 0.9,
   },
   button: {
     marginVertical: 20,

@@ -1,7 +1,8 @@
 import {View, Text, Image, StyleSheet} from 'react-native';
+import colors from '../assets/colors';
 
 const GameOverRanking = ({players}) => {
-  console.log(players)
+  console.log(players);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Game over</Text>
@@ -36,7 +37,7 @@ const GameOverRanking = ({players}) => {
           <View>
             <Image source={{uri: players?.[2]?.photo}} style={styles.avatar} />
             <Image
-              source={players?.[2] ?  require('../assets/images/top3.png') : ""}
+              source={players?.[2] ? require('../assets/images/top3.png') : ''}
               style={styles.medal}
               resizeMode="contain"
             />
@@ -61,6 +62,7 @@ const styles = StyleSheet.create({
     fontFamily: 'icielPony',
     marginVertical: 10,
     fontSize: 24,
+    color: 'black',
   },
   ranking: {
     flex: 1,
@@ -69,12 +71,15 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: 'icielPony',
     fontSize: 16,
+    color: 'black',
   },
   avatar: {
     width: '75%',
     aspectRatio: 1,
     borderRadius: 100,
     alignSelf: 'center',
+    borderWidth: 1,
+    borderColor: colors.darkGrey,
   },
   other: {
     flex: 1,
