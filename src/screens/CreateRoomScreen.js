@@ -61,6 +61,8 @@ const CreateRoomScreen = ({navigation, route}) => {
               maxMember: selectedNumber,
               canJoin: true,
               endPoint: selectedPoint,
+              topicName: topics[selectedTopic].name,
+              topicThumbnail: topics[selectedTopic].image,
               correctCount: 0,
               currentWord: null,
               currentMember: null, // docRef

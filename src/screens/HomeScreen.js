@@ -12,6 +12,10 @@ const HomeScreen = ({navigation, route}) => {
     navigation.navigate('CreateRoomScreen');
   };
 
+  const onJoinRoom = () => {
+    navigation.navigate('JoinRoomScreen');
+  };
+
   const signOut = () => {
     navigation.navigate('ProfileScreen', {userId: user.uid});
   };
@@ -129,6 +133,18 @@ const HomeScreen = ({navigation, route}) => {
             }}>
             <Text style={commonStyles.buttonText}>Chủ đề</Text>
           </ThemedButton>
+          <ThemedButton
+            name="bruce"
+            type="anchor"
+            backgroundColor={colors.yellow}
+            borderColor="black"
+            backgroundDarker="black"
+            textFontFamily="icielPony"
+            raiseLevel={5}
+            style={styles.button}
+            onPress={onJoinRoom}>
+            <Text style={styles.text}>Tìm kiếm</Text>
+          </ThemedButton>
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -181,5 +197,35 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 16,
+  },
+  avatarContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  avatar: {
+    height: 160,
+    width: 160,
+    resizeMode: 'contain',
+    backgroundColor: '#ced4da',
+    borderRadius: 100,
+    borderWidth: 4,
+    borderColor: 'black',
+  },
+  input: {
+    height: 50,
+    width: '60%',
+    marginHorizontal: 10,
+    borderWidth: 4,
+    borderColor: 'black',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: 'white',
+    textAlign: 'center',
+    borderRadius: 100,
+    fontSize: 24,
   },
 });
