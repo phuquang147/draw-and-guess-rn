@@ -35,7 +35,13 @@ const GameOverRanking = ({players}) => {
         </View>
         <View style={styles.other}>
           <View>
-            <Image source={{uri: players?.[2]?.photo}} style={styles.avatar} />
+            <Image
+              source={{uri: players?.[2]?.photo}}
+              style={[
+                styles.avatar,
+                !players?.[2]?.photo ? {borderWidth: 0} : '',
+              ]}
+            />
             <Image
               source={players?.[2] ? require('../assets/images/top3.png') : ''}
               style={styles.medal}
