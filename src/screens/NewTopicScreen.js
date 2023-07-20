@@ -24,6 +24,7 @@ import BackButton from '../components/BackButton';
 import DashedLine from '../components/DashedLine';
 import PhotoSelectionModal from '../components/PhotoSelectionModal';
 import ShadowWrapper from '../components/ShadowWrapper';
+import {Picker} from '@react-native-picker/picker';
 
 const NewTopicScreen = ({navigation, route}) => {
   const {user, topic} = route.params;
@@ -32,6 +33,7 @@ const NewTopicScreen = ({navigation, route}) => {
   const [visibleModal, setVisiableModal] = useState(false);
   const [image, setImage] = useState('');
   const [name, setName] = useState('');
+  const [privacy, setPrivacy] = useState('private');
   const [showAlert, setShowAlert] = useState(null);
   const [showConfirmAlert, setShowConfirmAlert] = useState('');
 
@@ -40,6 +42,7 @@ const NewTopicScreen = ({navigation, route}) => {
       setName(topic.name);
       setImage(topic.image);
       setWords(topic.words.map(word => ({id: uuid.v4(), value: word})));
+      setPrivacy(topic.privacy);
     }
   }, [topic]);
 
@@ -82,9 +85,16 @@ const NewTopicScreen = ({navigation, route}) => {
           name,
           author: user.uid,
           words: words.map(word => word.value),
+          privacy,
         })
         .then(() => {
-          handleBack();
+          setShowAlert({
+            message: 'Chỉnh sửa chủ đề thành công',
+            type: 'success',
+            callback: () => {
+              handleBack();
+            },
+          });
         });
     }
   };
@@ -105,6 +115,7 @@ const NewTopicScreen = ({navigation, route}) => {
           name,
           author: user.uid,
           words: words.map(word => word.value),
+          privacy,
         })
         .then(() => {
           setShowAlert({
@@ -154,6 +165,26 @@ const NewTopicScreen = ({navigation, route}) => {
                   placeholder="Tên chủ đề"
                   placeholderTextColor="#bbb"
                 />
+              </View>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={privacy}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setPrivacy(itemValue)
+                  }
+                  style={styles.picker}
+                  dropdownIconColor={colors.grey}>
+                  <Picker.Item
+                    style={styles.pickerItemText}
+                    label="Riêng tư"
+                    value={'private'}
+                  />
+                  <Picker.Item
+                    style={styles.pickerItemText}
+                    label="Công khai"
+                    value={'public'}
+                  />
+                </Picker>
               </View>
               <FlatList
                 data={words}
@@ -253,6 +284,9 @@ const NewTopicScreen = ({navigation, route}) => {
         showConfirmButton={true}
         onConfirmPressed={() => {
           setShowAlert(null);
+          if (showAlert.callback) {
+            showAlert.callback();
+          }
         }}
         confirmText="OK"
         confirmButtonColor={colors.green}
@@ -424,5 +458,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.25)',
     width: '100%',
     height: '100%',
+  },
+  pickerContainer: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    height: 50,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  picker: {
+    color: 'black',
+  },
+  pickerItemText: {
+    fontSize: 16,
+    color: 'black',
   },
 });

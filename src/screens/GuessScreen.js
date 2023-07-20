@@ -321,7 +321,7 @@ const renderDrawArea = (user, room, members) => {
     }
   }
 
-  return null;
+  return <View />;
 };
 
 const GuessScreen = ({navigation, route}) => {
