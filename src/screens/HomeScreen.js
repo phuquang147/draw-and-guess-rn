@@ -29,6 +29,8 @@ const HomeScreen = ({navigation, route}) => {
     firestore()
       .collection('rooms')
       .where('canJoin', '==', true)
+      .where('privacy', '==', 'public')
+      .limit(1)
       .get()
       .then(querySnapshot => {
         if (querySnapshot.docs.length > 0) {

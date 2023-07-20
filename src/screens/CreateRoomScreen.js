@@ -13,6 +13,8 @@ import commonStyles from '../assets/styles/commonStyles';
 const CreateRoomScreen = ({navigation, route}) => {
   const [selectedNumber, setSelectedNumber] = useState(10);
   const [selectedPoint, setSelectedPoint] = useState(120);
+  const [selectedPrivacy, setSelectedPrivacy] = useState('private');
+
   const [topics, setTopics] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const {user} = route.params;
@@ -74,6 +76,7 @@ const CreateRoomScreen = ({navigation, route}) => {
               state: 'waiting', // waiting | choosing | drawing
               roundCount: 0,
               canHint: true,
+              privacy: selectedPrivacy,
             })
             .then(room => {
               firestore()
@@ -218,6 +221,26 @@ const CreateRoomScreen = ({navigation, route}) => {
                   style={styles.pickerItemText}
                   label="180 Điểm"
                   value={180}
+                />
+              </Picker>
+            </View>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={selectedPrivacy}
+                onValueChange={(itemValue, itemIndex) =>
+                  setSelectedPrivacy(itemValue)
+                }
+                style={styles.picker}
+                dropdownIconColor={colors.grey}>
+                <Picker.Item
+                  style={styles.pickerItemText}
+                  label="Riêng tư"
+                  value="private"
+                />
+                <Picker.Item
+                  style={styles.pickerItemText}
+                  label="Công khai"
+                  value="public"
                 />
               </Picker>
             </View>
