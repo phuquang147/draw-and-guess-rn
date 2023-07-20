@@ -86,6 +86,7 @@ const NewTopicScreen = ({navigation, route}) => {
           author: user.uid,
           words: words.map(word => word.value),
           privacy,
+          accepted: false,
         })
         .then(() => {
           setShowAlert({
@@ -116,6 +117,7 @@ const NewTopicScreen = ({navigation, route}) => {
           author: user.uid,
           words: words.map(word => word.value),
           privacy,
+          accepted: false,
         })
         .then(() => {
           setShowAlert({
