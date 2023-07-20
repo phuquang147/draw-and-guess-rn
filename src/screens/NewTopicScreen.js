@@ -86,11 +86,11 @@ const NewTopicScreen = ({navigation, route}) => {
           author: user.uid,
           words: words.map(word => word.value),
           privacy,
-          accepted: false,
+          state: 'waiting',
         })
         .then(() => {
           setShowAlert({
-            message: 'Chỉnh sửa chủ đề thành công',
+            message: 'Thêm chủ đề thành công',
             type: 'success',
             callback: () => {
               handleBack();
@@ -117,7 +117,7 @@ const NewTopicScreen = ({navigation, route}) => {
           author: user.uid,
           words: words.map(word => word.value),
           privacy,
-          accepted: false,
+          state: 'waiting',
         })
         .then(() => {
           setShowAlert({

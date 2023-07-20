@@ -23,8 +23,8 @@ const ManageTopicsScreen = ({navigation, route}) => {
   const {user} = route.params;
 
   useEffect(() => {
-    const getTopics = async () => {
-      await firestore()
+    const getTopics = () => {
+      firestore()
         .collection('topics')
         .where('author', '==', user?.uid)
         .onSnapshot(snapshot => {

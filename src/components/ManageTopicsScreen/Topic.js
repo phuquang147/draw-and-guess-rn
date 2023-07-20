@@ -8,14 +8,43 @@ const Topic = ({topic}) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.infoContainer}>
-        <Image
-          style={styles.image}
-          source={{
-            uri: topic.image,
-          }}
-        />
-        <Text style={styles.name}>{topic.name}</Text>
+      <View style={styles.contentContainer}>
+        <View style={styles.infoContainer}>
+          <Image
+            style={styles.image}
+            source={{
+              uri: topic.image,
+            }}
+          />
+          <Text style={styles.name} numberOfLines={1}>
+            {topic.name}
+          </Text>
+        </View>
+        {topic.privacy === 'public' ? (
+          <Text
+            style={[
+              styles.text,
+              topic.state === 'waiting'
+                ? {color: '#e67700', backgroundColor: '#ffec99'}
+                : topic.state === 'accepted'
+                ? {color: '#2b8a3e', backgroundColor: '#c0eb75'}
+                : {color: '#212529', backgroundColor: '#e9ecef'},
+            ]}>
+            {topic.state === 'waiting'
+              ? 'Chờ duyệt'
+              : topic.state === 'accepted'
+              ? 'Công khai'
+              : 'Từ chối'}
+          </Text>
+        ) : (
+          <Text
+            style={[
+              styles.text,
+              {color: '#c92a2a', backgroundColor: '#ffc9c9'},
+            ]}>
+            Riêng tư
+          </Text>
+        )}
       </View>
       <Pressable
         style={styles.editButton}
@@ -43,7 +72,15 @@ const styles = StyleSheet.create({
   infoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: 8,
+    flex: 1,
+  },
+  contentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+    flex: 1,
   },
   image: {
     height: 40,
@@ -56,6 +93,15 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 18,
     fontWeight: 'bold',
+    flex: 1,
+  },
+  text: {
+    fontSize: 13,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 100,
+    width: 80,
+    textAlign: 'center',
   },
   editButton: {
     width: 40,
