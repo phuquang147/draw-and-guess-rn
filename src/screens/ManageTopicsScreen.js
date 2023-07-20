@@ -20,13 +20,13 @@ import EmptyList from '../components/EmptyList';
 
 const ManageTopicsScreen = ({navigation, route}) => {
   const [topics, setTopics] = useState([]);
-  const {user} = route.params;
+  const {user, userRole} = route.params;
 
   useEffect(() => {
     const getTopics = () => {
       firestore()
         .collection('topics')
-        .where('author', '==', user?.uid)
+        .where('author', '==', userRole === 'admin' ? 'admin' : user?.uid)
         .onSnapshot(snapshot => {
           setTopics(
             snapshot.docs.map(topic => ({...topic.data(), id: topic.id})),
@@ -50,7 +50,9 @@ const ManageTopicsScreen = ({navigation, route}) => {
             {topics.length > 0 ? (
               <FlatList
                 data={topics}
-                renderItem={({item}) => <Topic topic={item} />}
+                renderItem={({item}) => (
+                  <Topic topic={item} userRole={userRole} />
+                )}
                 keyExtractor={item => item.id}
                 style={styles.topics}
                 ItemSeparatorComponent={() => <DashedLine />}

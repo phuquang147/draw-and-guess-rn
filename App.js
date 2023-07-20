@@ -14,12 +14,16 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import {LogBox} from 'react-native';
 import {useNetInfo} from '@react-native-community/netinfo';
 import LostConnectionScreen from './src/screens/LostConnectionScreen';
+import ManageRequestsScreen from './src/screens/ManageRequestsScreen';
+import RequestDetailScreen from './src/screens/RequestDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
 function App() {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
+  const [userRole, setUserRole] = useState(undefined);
+
   const netInfo = useNetInfo();
 
   const onAuthStateChanged = async user => {
@@ -29,12 +33,21 @@ function App() {
         .collection('users')
         .doc(user.uid)
         .get();
+
       if (!saveduser.exists) {
-        firestore().collection('users').doc(user.uid).set({
-          name: user.displayName,
-          email: user.email,
-          photo: user.photoURL,
-        });
+        firestore()
+          .collection('users')
+          .doc(user.uid)
+          .set({
+            name: user.displayName,
+            email: user.email,
+            photo: user.photoURL,
+          })
+          .then(snapshot => {
+            setUserRole(snapshot.data().role);
+          });
+      } else {
+        setUserRole(saveduser.data().role);
       }
     }
     if (initializing) setInitializing(false);
@@ -53,14 +66,14 @@ function App() {
   }
 
   LogBox.ignoreAllLogs();
-
+  console.log(userRole);
   return (
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          initialParams={{user}}
+          initialParams={{user, userRole}}
           options={{headerShown: false}}
         />
         <Stack.Screen
@@ -88,13 +101,25 @@ function App() {
         <Stack.Screen
           name="ManageTopicsScreen"
           component={ManageTopicsScreen}
-          initialParams={{user}}
+          initialParams={{user, userRole}}
           options={{headerShown: false}}
         />
         <Stack.Screen
           name="NewTopicScreen"
           component={NewTopicScreen}
-          initialParams={{user}}
+          initialParams={{user, userRole}}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="ManageRequestsScreen"
+          component={ManageRequestsScreen}
+          initialParams={{user, userRole}}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="RequestDetailScreen"
+          component={RequestDetailScreen}
+          initialParams={{user, userRole}}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

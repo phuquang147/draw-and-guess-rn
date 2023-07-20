@@ -27,7 +27,7 @@ import ShadowWrapper from '../components/ShadowWrapper';
 import {Picker} from '@react-native-picker/picker';
 
 const NewTopicScreen = ({navigation, route}) => {
-  const {user, topic} = route.params;
+  const {user, userRole, topic} = route.params;
   const [words, setWords] = useState([]);
   const [word, setWord] = useState('');
   const [visibleModal, setVisiableModal] = useState(false);
@@ -83,10 +83,10 @@ const NewTopicScreen = ({navigation, route}) => {
         .add({
           image,
           name,
-          author: user.uid,
+          author: userRole === 'admin' ? 'admin' : user.uid,
           words: words.map(word => word.value),
-          privacy,
-          state: 'waiting',
+          privacy: userRole === 'admin' ? 'public' : privacy,
+          state: userRole === 'admin' ? 'accepted' : 'waiting',
         })
         .then(() => {
           setShowAlert({
@@ -168,26 +168,28 @@ const NewTopicScreen = ({navigation, route}) => {
                   placeholderTextColor="#bbb"
                 />
               </View>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={privacy}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setPrivacy(itemValue)
-                  }
-                  style={styles.picker}
-                  dropdownIconColor={colors.grey}>
-                  <Picker.Item
-                    style={styles.pickerItemText}
-                    label="Riêng tư"
-                    value={'private'}
-                  />
-                  <Picker.Item
-                    style={styles.pickerItemText}
-                    label="Công khai"
-                    value={'public'}
-                  />
-                </Picker>
-              </View>
+              {userRole !== 'admin' && (
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={privacy}
+                    onValueChange={(itemValue, itemIndex) =>
+                      setPrivacy(itemValue)
+                    }
+                    style={styles.picker}
+                    dropdownIconColor={colors.grey}>
+                    <Picker.Item
+                      style={styles.pickerItemText}
+                      label="Riêng tư"
+                      value={'private'}
+                    />
+                    <Picker.Item
+                      style={styles.pickerItemText}
+                      label="Công khai"
+                      value={'public'}
+                    />
+                  </Picker>
+                </View>
+              )}
               <FlatList
                 data={words}
                 renderItem={({item}) => (
