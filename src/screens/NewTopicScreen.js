@@ -114,10 +114,9 @@ const NewTopicScreen = ({navigation, route}) => {
         .update({
           image,
           name,
-          author: user.uid,
           words: words.map(word => word.value),
-          privacy,
-          state: 'waiting',
+          privacy: userRole === 'admin' ? 'public' : privacy,
+          state: userRole === 'admin' ? 'accepted' : 'waiting',
         })
         .then(() => {
           setShowAlert({
