@@ -7,7 +7,6 @@ import {
   Text,
   TextInput,
   View,
-  ActivityIndicator,
 } from 'react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import {ThemedButton} from 'react-native-really-awesome-button';
@@ -18,10 +17,10 @@ import colors from '../assets/colors';
 import commonStyles from '../assets/styles/commonStyles';
 import BackButton from '../components/BackButton';
 import DashedLine from '../components/DashedLine';
-import Room from '../components/Room';
-import ShadowWrapper from '../components/ShadowWrapper';
 import EmptyList from '../components/EmptyList';
 import Loading from '../components/Loading';
+import Room from '../components/Room';
+import ShadowWrapper from '../components/ShadowWrapper';
 
 const JoinRoomScreen = ({navigation, route}) => {
   const [id, setId] = useState('');
@@ -34,6 +33,7 @@ const JoinRoomScreen = ({navigation, route}) => {
     const getRooms = () => {
       firestore()
         .collection('rooms')
+        .where('privacy', '==', 'public')
         .onSnapshot(async querySnapshot => {
           const tempRooms = [];
           for (let room of querySnapshot.docs) {

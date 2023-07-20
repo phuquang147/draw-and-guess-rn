@@ -14,12 +14,15 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Clipboard from '@react-native-clipboard/clipboard';
 import commonStyles from '../assets/styles/commonStyles';
 import {useNavigation} from '@react-navigation/native';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
+import firestore from '@react-native-firebase/firestore';
 
 const windowWidth = Dimensions.get('window').width;
 
-const RoomInfoModal = ({room, onClose}) => {
+const RoomInfoModal = ({room, roomId, onClose}) => {
   const navigation = useNavigation();
   const [isCopied, setIsCopied] = useState(false);
+
   const handleCopy = () => {
     Clipboard.setString(room.id);
     setIsCopied(true);
@@ -30,6 +33,14 @@ const RoomInfoModal = ({room, onClose}) => {
 
   const onBack = () => {
     navigation.goBack('Home');
+  };
+
+  const changeRoomPrivacy = isChecked => {
+    firestore()
+      .doc(`rooms/${roomId}`)
+      .update({
+        privacy: isChecked ? 'public' : 'private',
+      });
   };
 
   return (
@@ -60,6 +71,19 @@ const RoomInfoModal = ({room, onClose}) => {
               <Text style={styles.modalText}>
                 Điểm kết thúc: {room.endPoint}
               </Text>
+              <View style={styles.privacyContainer}>
+                <Text style={styles.modalText}>Công khai</Text>
+                <BouncyCheckbox
+                  size={25}
+                  fillColor="#69db7c"
+                  unfillColor="#FFFFFF"
+                  iconStyle={{borderColor: 'red'}}
+                  innerIconStyle={{borderWidth: 2}}
+                  textStyle={{fontFamily: 'JosefinSans-Regular'}}
+                  isChecked={room.privacy === 'public'}
+                  onPress={changeRoomPrivacy}
+                />
+              </View>
             </View>
             <View style={styles.buttonContainer}>
               <ThemedButton
@@ -166,6 +190,11 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     gap: 10,
+  },
+  privacyContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
 });
 
