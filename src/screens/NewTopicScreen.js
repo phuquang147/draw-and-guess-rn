@@ -478,6 +478,5 @@ const styles = StyleSheet.create({
   },
   pickerItemText: {
     fontSize: 16,
-    color: 'black',
   },
 });
