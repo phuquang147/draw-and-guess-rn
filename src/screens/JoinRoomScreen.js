@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useContext} from 'react';
 import {
   FlatList,
   ImageBackground,
@@ -21,10 +21,11 @@ import EmptyList from '../components/EmptyList';
 import Loading from '../components/Loading';
 import Room from '../components/Room';
 import ShadowWrapper from '../components/ShadowWrapper';
+import {UserContext} from '../../App';
 
 const JoinRoomScreen = ({navigation, route}) => {
   const [id, setId] = useState('');
-  const {user} = route.params;
+  const {user} = useContext(UserContext);
   const [rooms, setRooms] = useState([]);
   const [showAlert, setShowAlert] = useState('');
   const [loading, setLoading] = useState(true);

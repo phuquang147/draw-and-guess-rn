@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useContext} from 'react';
 import {
   FlatList,
   Image,
@@ -17,10 +17,11 @@ import DashedLine from '../components/DashedLine';
 import Topic from '../components/ManageTopicsScreen/Topic';
 import ShadowWrapper from '../components/ShadowWrapper';
 import EmptyList from '../components/EmptyList';
+import {UserContext} from '../../App';
 
 const ManageTopicsScreen = ({navigation, route}) => {
   const [topics, setTopics] = useState([]);
-  const {user, userRole} = route.params;
+  const {user, userRole} = useContext(UserContext);
 
   useEffect(() => {
     const getTopics = () => {

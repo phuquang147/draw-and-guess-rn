@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useContext} from 'react';
 import {
   Alert,
   FlatList,
@@ -25,9 +25,11 @@ import DashedLine from '../components/DashedLine';
 import PhotoSelectionModal from '../components/PhotoSelectionModal';
 import ShadowWrapper from '../components/ShadowWrapper';
 import {Picker} from '@react-native-picker/picker';
+import {UserContext} from '../../App';
 
 const NewTopicScreen = ({navigation, route}) => {
-  const {user, userRole, topic} = route.params;
+  const {topic} = route.params;
+  const {user, userRole} = useContext(UserContext);
   const [words, setWords] = useState([]);
   const [word, setWord] = useState('');
   const [visibleModal, setVisiableModal] = useState(false);

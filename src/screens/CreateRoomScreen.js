@@ -1,6 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import {Picker} from '@react-native-picker/picker';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useContext} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -9,6 +9,7 @@ import colors from '../assets/colors';
 import ChatRoomServices from '../services/chatRoomServices';
 import BackButton from '../components/BackButton';
 import commonStyles from '../assets/styles/commonStyles';
+import {UserContext} from '../../App';
 
 const CreateRoomScreen = ({navigation, route}) => {
   const [selectedNumber, setSelectedNumber] = useState(10);
@@ -17,7 +18,7 @@ const CreateRoomScreen = ({navigation, route}) => {
 
   const [topics, setTopics] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState(null);
-  const {user} = route.params;
+  const {user} = useContext(UserContext);
 
   const goBack = () => {
     navigation.navigate('Home');
