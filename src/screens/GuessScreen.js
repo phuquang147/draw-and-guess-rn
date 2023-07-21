@@ -302,7 +302,7 @@ const renderDrawArea = (user, room, members, roomId) => {
                 <ViewDrawArea user={user} room={room} />
               </View>
             </View>
-            <View
+            {/* <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -310,7 +310,7 @@ const renderDrawArea = (user, room, members, roomId) => {
                 width: '100%',
                 height: '100%',
                 zIndex: 100,
-              }}></View>
+              }}></View> */}
             {roomInfoModalVisible && (
               <RoomInfoModal
                 room={room}
@@ -459,7 +459,7 @@ const GuessScreen = ({navigation, route}) => {
           .collection('answers')
           .add({
             uid: user.uid,
-            name: user.displayName,
+            name: userInRoom.name,
             answer: answer,
             createdAt: new Date(),
             status, // wrong | almost | correct
