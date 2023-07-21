@@ -14,7 +14,7 @@ const ViewDrawArea = ({user, room}) => {
         roomToken: room.roomToken,
         isWritable: false,
         disableCameraTransform: true,
-        rejectWhenReadonlyErrorLevel: true,
+        enableRejectReadonlyError: true,
       }}
       style={styles.guessCanvas}
       displayConfig={{

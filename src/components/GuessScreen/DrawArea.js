@@ -16,7 +16,7 @@ const DrawArea = ({user, room}) => {
         uid: user.uid,
         uuid: room.uuid,
         roomToken: room.roomToken,
-        rejectWhenReadonlyErrorLevel: true,
+        enableRejectReadonlyError: true,
       }}
       style={styles.canvas}
       joinRoomSuccessCallback={FastRoomObject => drawingBoard(FastRoomObject)}
