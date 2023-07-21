@@ -48,11 +48,11 @@ const CreateRoomScreen = ({navigation, route}) => {
   }, []);
 
   const handleNextTopic = () => {
-    setSelectedTopic(prev => prev + 1);
+    setSelectedTopic(prev => (prev < topics.length - 1 ? prev + 1 : 0));
   };
 
   const handlePrevTopic = () => {
-    setSelectedTopic(prev => prev - 1);
+    setSelectedTopic(prev => (prev > 0 ? prev - 1 : topics.length - 1));
   };
 
   const handleCreateRoom = async () => {
@@ -144,7 +144,8 @@ const CreateRoomScreen = ({navigation, route}) => {
               width={null}
               raiseLevel={2}
               onPress={handlePrevTopic}
-              disabled={selectedTopic === 0 || selectedTopic === null}>
+              // disabled={selectedTopic === 0 || selectedTopic === null}
+            >
               <Icon name="arrow-left" size={24} color="black" />
             </ThemedButton>
             <Image
@@ -166,9 +167,10 @@ const CreateRoomScreen = ({navigation, route}) => {
               width={null}
               raiseLevel={2}
               onPress={handleNextTopic}
-              disabled={
-                selectedTopic === topics.length - 1 || selectedTopic === null
-              }>
+              // disabled={
+              //   selectedTopic === topics.length - 1 || selectedTopic === null
+              // }
+            >
               <Icon name="arrow-right" size={24} color="black" />
             </ThemedButton>
           </View>
