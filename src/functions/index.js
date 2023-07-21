@@ -302,33 +302,14 @@ exports.listenToRoomStateChange = functions
         if (countDownTime <= 0) {
           {
             admin
-              .database()
-              .ref(`/rooms/${roomId}-${newRoundCount + 1}`)
-              .once('value')
-              .then(snapshot => {
-                if (!snapshot.val()) {
-                  clearInterval(interval);
-                  admin
-                    .firestore()
-                    .collection(`rooms/${roomId}/members`)
-                    .count()
-                    .get()
-                    .then(snapshot => {
-                      admin
-                        .firestore()
-                        .doc(`rooms/${roomId}`)
-                        .get()
-                        .then(roomSnapshot => {
-                          if (
-                            snapshot.data().count >= 2 &&
-                            roomSnapshot.data().state !== 'waiting'
-                          )
-                            resetData();
-                        });
-                    });
-                } else {
-                  clearInterval(interval);
-                }
+              .firestore()
+              .doc(`rooms/${roomId}`)
+              .get()
+              .then(roomSnapshot => {
+                if (roomSnapshot.data().roundCount === newRoundCount)
+                  resetData();
+
+                clearInterval(interval);
               });
 
             admin.database().ref(`/rooms/${roomId}-${newRoundCount}`).remove();

@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import {useState} from 'react';
+import {useState, useContext} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import {ThemedButton} from 'react-native-really-awesome-button';
@@ -8,9 +8,11 @@ import FIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../assets/colors';
 import commonStyles from '../assets/styles/commonStyles';
+import {UserContext} from '../../App';
 
 const HomeScreen = ({navigation, route}) => {
-  const {user} = route.params;
+  const {user, userRole} = useContext(UserContext);
+
   const [showAlert, setShowAlert] = useState('');
 
   const onCreateRoom = () => {
@@ -29,6 +31,8 @@ const HomeScreen = ({navigation, route}) => {
     firestore()
       .collection('rooms')
       .where('canJoin', '==', true)
+      .where('privacy', '==', 'public')
+      .limit(1)
       .get()
       .then(querySnapshot => {
         if (querySnapshot.docs.length > 0) {
@@ -100,43 +104,63 @@ const HomeScreen = ({navigation, route}) => {
             />
             <Text style={styles.gameName}>Draw & Guess</Text>
           </View>
-          <ThemedButton
-            name="bruce"
-            type="anchor"
-            backgroundColor={colors.green}
-            borderColor={colors.darkGreen}
-            backgroundDarker={colors.darkGreen}
-            textFontFamily="icielPony"
-            textColor={colors.darkGreen}
-            raiseLevel={5}
-            style={styles.button}
-            onPress={handleJoinRandomRoom}>
-            <Text style={commonStyles.buttonText}>Bắt đầu</Text>
-          </ThemedButton>
-          <ThemedButton
-            name="bruce"
-            type="anchor"
-            backgroundColor={colors.blue}
-            borderColor={colors.darkBlue}
-            backgroundDarker={colors.darkBlue}
-            textFontFamily="icielPony"
-            raiseLevel={5}
-            style={styles.button}
-            onPress={() => onCreateRoom()}>
-            <Text style={commonStyles.buttonText}>Tạo phòng</Text>
-          </ThemedButton>
-          <ThemedButton
-            name="bruce"
-            type="anchor"
-            backgroundColor={colors.yellow}
-            borderColor={colors.darkYellow}
-            backgroundDarker={colors.darkYellow}
-            textFontFamily="icielPony"
-            raiseLevel={5}
-            style={styles.button}
-            onPress={onJoinRoom}>
-            <Text style={commonStyles.buttonText}>Tìm kiếm</Text>
-          </ThemedButton>
+          {userRole !== 'admin' && (
+            <View>
+              <ThemedButton
+                name="bruce"
+                type="anchor"
+                backgroundColor={colors.green}
+                borderColor={colors.darkGreen}
+                backgroundDarker={colors.darkGreen}
+                textFontFamily="icielPony"
+                textColor={colors.darkGreen}
+                raiseLevel={5}
+                style={styles.button}
+                onPress={handleJoinRandomRoom}>
+                <Text style={commonStyles.buttonText}>Bắt đầu</Text>
+              </ThemedButton>
+              <ThemedButton
+                name="bruce"
+                type="anchor"
+                backgroundColor={colors.blue}
+                borderColor={colors.darkBlue}
+                backgroundDarker={colors.darkBlue}
+                textFontFamily="icielPony"
+                raiseLevel={5}
+                style={styles.button}
+                onPress={() => onCreateRoom()}>
+                <Text style={commonStyles.buttonText}>Tạo phòng</Text>
+              </ThemedButton>
+              <ThemedButton
+                name="bruce"
+                type="anchor"
+                backgroundColor={colors.yellow}
+                borderColor={colors.darkYellow}
+                backgroundDarker={colors.darkYellow}
+                textFontFamily="icielPony"
+                raiseLevel={5}
+                style={styles.button}
+                onPress={onJoinRoom}>
+                <Text style={commonStyles.buttonText}>Tìm kiếm</Text>
+              </ThemedButton>
+            </View>
+          )}
+          {userRole === 'admin' && (
+            <ThemedButton
+              name="bruce"
+              type="anchor"
+              backgroundColor={colors.blue}
+              borderColor={colors.darkBlue}
+              backgroundDarker={colors.darkBlue}
+              textFontFamily="icielPony"
+              raiseLevel={5}
+              style={styles.button}
+              onPress={() => {
+                navigation.navigate('ManageRequestsScreen');
+              }}>
+              <Text style={commonStyles.buttonText}>Yêu cầu</Text>
+            </ThemedButton>
+          )}
           <ThemedButton
             name="bruce"
             type="anchor"

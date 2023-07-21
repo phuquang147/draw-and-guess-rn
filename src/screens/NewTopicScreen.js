@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useContext} from 'react';
 import {
   Alert,
   FlatList,
@@ -24,14 +24,18 @@ import BackButton from '../components/BackButton';
 import DashedLine from '../components/DashedLine';
 import PhotoSelectionModal from '../components/PhotoSelectionModal';
 import ShadowWrapper from '../components/ShadowWrapper';
+import {Picker} from '@react-native-picker/picker';
+import {UserContext} from '../../App';
 
 const NewTopicScreen = ({navigation, route}) => {
-  const {user, topic} = route.params;
+  const {topic} = route.params;
+  const {user, userRole} = useContext(UserContext);
   const [words, setWords] = useState([]);
   const [word, setWord] = useState('');
   const [visibleModal, setVisiableModal] = useState(false);
   const [image, setImage] = useState('');
   const [name, setName] = useState('');
+  const [privacy, setPrivacy] = useState('private');
   const [showAlert, setShowAlert] = useState(null);
   const [showConfirmAlert, setShowConfirmAlert] = useState('');
 
@@ -40,6 +44,7 @@ const NewTopicScreen = ({navigation, route}) => {
       setName(topic.name);
       setImage(topic.image);
       setWords(topic.words.map(word => ({id: uuid.v4(), value: word})));
+      setPrivacy(topic.privacy);
     }
   }, [topic]);
 
@@ -80,11 +85,19 @@ const NewTopicScreen = ({navigation, route}) => {
         .add({
           image,
           name,
-          author: user.uid,
+          author: userRole === 'admin' ? 'admin' : user.uid,
           words: words.map(word => word.value),
+          privacy: userRole === 'admin' ? 'public' : privacy,
+          state: userRole === 'admin' ? 'accepted' : 'waiting',
         })
         .then(() => {
-          handleBack();
+          setShowAlert({
+            message: 'Thêm chủ đề thành công',
+            type: 'success',
+            callback: () => {
+              handleBack();
+            },
+          });
         });
     }
   };
@@ -103,8 +116,9 @@ const NewTopicScreen = ({navigation, route}) => {
         .update({
           image,
           name,
-          author: user.uid,
           words: words.map(word => word.value),
+          privacy: userRole === 'admin' ? 'public' : privacy,
+          state: userRole === 'admin' ? 'accepted' : 'waiting',
         })
         .then(() => {
           setShowAlert({
@@ -155,6 +169,28 @@ const NewTopicScreen = ({navigation, route}) => {
                   placeholderTextColor="#bbb"
                 />
               </View>
+              {userRole !== 'admin' && (
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={privacy}
+                    onValueChange={(itemValue, itemIndex) =>
+                      setPrivacy(itemValue)
+                    }
+                    style={styles.picker}
+                    dropdownIconColor={colors.grey}>
+                    <Picker.Item
+                      style={styles.pickerItemText}
+                      label="Riêng tư"
+                      value={'private'}
+                    />
+                    <Picker.Item
+                      style={styles.pickerItemText}
+                      label="Công khai"
+                      value={'public'}
+                    />
+                  </Picker>
+                </View>
+              )}
               <FlatList
                 data={words}
                 renderItem={({item}) => (
@@ -253,6 +289,9 @@ const NewTopicScreen = ({navigation, route}) => {
         showConfirmButton={true}
         onConfirmPressed={() => {
           setShowAlert(null);
+          if (showAlert.callback) {
+            showAlert.callback();
+          }
         }}
         confirmText="OK"
         confirmButtonColor={colors.green}
@@ -424,5 +463,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.25)',
     width: '100%',
     height: '100%',
+  },
+  pickerContainer: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    height: 50,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  picker: {
+    color: 'black',
+  },
+  pickerItemText: {
+    fontSize: 16,
   },
 });

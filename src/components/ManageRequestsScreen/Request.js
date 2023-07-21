@@ -1,9 +1,9 @@
 import {useNavigation} from '@react-navigation/native';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/Feather';
 import colors from '../../assets/colors';
 
-const Topic = ({topic, userRole}) => {
+const Request = ({topic}) => {
   const navigation = useNavigation();
 
   return (
@@ -20,49 +20,45 @@ const Topic = ({topic, userRole}) => {
             {topic.name}
           </Text>
         </View>
-        {userRole !== 'admin' && (
-          <View>
-            {topic.privacy === 'public' ? (
-              <Text
-                style={[
-                  styles.text,
-                  topic.state === 'waiting'
-                    ? {color: '#e67700', backgroundColor: '#ffec99'}
-                    : topic.state === 'accepted'
-                    ? {color: '#2b8a3e', backgroundColor: '#c0eb75'}
-                    : {color: '#212529', backgroundColor: '#e9ecef'},
-                ]}>
-                {topic.state === 'waiting'
-                  ? 'Chờ duyệt'
-                  : topic.state === 'accepted'
-                  ? 'Công khai'
-                  : 'Từ chối'}
-              </Text>
-            ) : (
-              <Text
-                style={[
-                  styles.text,
-                  {color: '#c92a2a', backgroundColor: '#ffc9c9'},
-                ]}>
-                Riêng tư
-              </Text>
-            )}
-          </View>
+        {topic.privacy === 'public' ? (
+          <Text
+            style={[
+              styles.text,
+              topic.state === 'waiting'
+                ? {color: '#e67700', backgroundColor: '#ffec99'}
+                : topic.state === 'accepted'
+                ? {color: '#2b8a3e', backgroundColor: '#c0eb75'}
+                : {color: '#212529', backgroundColor: '#e9ecef'},
+            ]}>
+            {topic.state === 'waiting'
+              ? 'Chờ duyệt'
+              : topic.state === 'accepted'
+              ? 'Công khai'
+              : 'Từ chối'}
+          </Text>
+        ) : (
+          <Text
+            style={[
+              styles.text,
+              {color: '#c92a2a', backgroundColor: '#ffc9c9'},
+            ]}>
+            Riêng tư
+          </Text>
         )}
       </View>
       <Pressable
         style={styles.editButton}
         android_ripple={{color: '#84accc', radius: 20}}
         onPress={() => {
-          navigation.navigate('NewTopicScreen', {topic});
+          navigation.navigate('RequestDetailScreen', {topic});
         }}>
-        <Icon name="circle-edit-outline" size={24} color={colors.darkBlue} />
+        <Icon name="info" size={24} color={colors.darkBlue} />
       </Pressable>
     </View>
   );
 };
 
-export default Topic;
+export default Request;
 
 const styles = StyleSheet.create({
   container: {

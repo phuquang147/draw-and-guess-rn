@@ -1,6 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import {Picker} from '@react-native-picker/picker';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useContext} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import {ThemedButton} from 'react-native-really-awesome-button';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -9,13 +9,16 @@ import colors from '../assets/colors';
 import ChatRoomServices from '../services/chatRoomServices';
 import BackButton from '../components/BackButton';
 import commonStyles from '../assets/styles/commonStyles';
+import {UserContext} from '../../App';
 
 const CreateRoomScreen = ({navigation, route}) => {
   const [selectedNumber, setSelectedNumber] = useState(10);
   const [selectedPoint, setSelectedPoint] = useState(120);
+  const [selectedPrivacy, setSelectedPrivacy] = useState('private');
+
   const [topics, setTopics] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState(null);
-  const {user} = route.params;
+  const {user} = useContext(UserContext);
 
   const goBack = () => {
     navigation.navigate('Home');
@@ -27,11 +30,17 @@ const CreateRoomScreen = ({navigation, route}) => {
 
   useEffect(() => {
     const getTopics = async () => {
-      const topicsSnapshot = await firestore()
-        .collection('topics')
-        .where('author', 'in', ['admin', user.uid])
-        .get();
-      setTopics(topicsSnapshot.docs.map(topic => topic.data()));
+      const topicsSnapshot = await firestore().collection('topics').get();
+      setTopics(
+        topicsSnapshot.docs
+          .map(topic => topic.data())
+          .filter(
+            topic =>
+              topic.author === 'admin' ||
+              topic.author === user.uid ||
+              (topic.privacy === 'public' && topic.state === 'accepted'),
+          ),
+      );
       setSelectedTopic(0);
     };
 
@@ -39,11 +48,11 @@ const CreateRoomScreen = ({navigation, route}) => {
   }, []);
 
   const handleNextTopic = () => {
-    setSelectedTopic(prev => prev + 1);
+    setSelectedTopic(prev => (prev < topics.length - 1 ? prev + 1 : 0));
   };
 
   const handlePrevTopic = () => {
-    setSelectedTopic(prev => prev - 1);
+    setSelectedTopic(prev => (prev > 0 ? prev - 1 : topics.length - 1));
   };
 
   const handleCreateRoom = async () => {
@@ -74,6 +83,7 @@ const CreateRoomScreen = ({navigation, route}) => {
               state: 'waiting', // waiting | choosing | drawing
               roundCount: 0,
               canHint: true,
+              privacy: selectedPrivacy,
             })
             .then(room => {
               firestore()
@@ -134,7 +144,8 @@ const CreateRoomScreen = ({navigation, route}) => {
               width={null}
               raiseLevel={2}
               onPress={handlePrevTopic}
-              disabled={selectedTopic === 0 || selectedTopic === null}>
+              // disabled={selectedTopic === 0 || selectedTopic === null}
+            >
               <Icon name="arrow-left" size={24} color="black" />
             </ThemedButton>
             <Image
@@ -156,9 +167,10 @@ const CreateRoomScreen = ({navigation, route}) => {
               width={null}
               raiseLevel={2}
               onPress={handleNextTopic}
-              disabled={
-                selectedTopic === topics.length - 1 || selectedTopic === null
-              }>
+              // disabled={
+              //   selectedTopic === topics.length - 1 || selectedTopic === null
+              // }
+            >
               <Icon name="arrow-right" size={24} color="black" />
             </ThemedButton>
           </View>
@@ -218,6 +230,26 @@ const CreateRoomScreen = ({navigation, route}) => {
                   style={styles.pickerItemText}
                   label="180 Điểm"
                   value={180}
+                />
+              </Picker>
+            </View>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={selectedPrivacy}
+                onValueChange={(itemValue, itemIndex) =>
+                  setSelectedPrivacy(itemValue)
+                }
+                style={styles.picker}
+                dropdownIconColor={colors.grey}>
+                <Picker.Item
+                  style={styles.pickerItemText}
+                  label="Riêng tư"
+                  value="private"
+                />
+                <Picker.Item
+                  style={styles.pickerItemText}
+                  label="Công khai"
+                  value="public"
                 />
               </Picker>
             </View>

@@ -25,7 +25,7 @@ import Player from '../components/Player';
 import RoomInfoModal from '../components/RoomInfoModal';
 import WordSelectionModal from '../components/WordSelectionModal';
 
-const renderDrawArea = (user, room, members) => {
+const renderDrawArea = (user, room, members, roomId) => {
   const [players, setPlayers] = useState([]);
   const [word, setWord] = useState();
   const [currentMemberName, setCurrentMemberName] = useState('');
@@ -138,6 +138,7 @@ const renderDrawArea = (user, room, members) => {
             {roomInfoModalVisible && (
               <RoomInfoModal
                 room={room}
+                roomId={roomId}
                 onClose={() => setRoomInfoModalVisible(false)}
               />
             )}
@@ -301,7 +302,7 @@ const renderDrawArea = (user, room, members) => {
                 <ViewDrawArea user={user} room={room} />
               </View>
             </View>
-            <View
+            {/* <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -309,7 +310,7 @@ const renderDrawArea = (user, room, members) => {
                 width: '100%',
                 height: '100%',
                 zIndex: 100,
-              }}></View>
+              }}></View> */}
             {roomInfoModalVisible && (
               <RoomInfoModal
                 room={room}
@@ -320,8 +321,7 @@ const renderDrawArea = (user, room, members) => {
         );
     }
   }
-
-  return null;
+  return <View />;
 };
 
 const GuessScreen = ({navigation, route}) => {
@@ -459,7 +459,7 @@ const GuessScreen = ({navigation, route}) => {
           .collection('answers')
           .add({
             uid: user.uid,
-            name: user.displayName,
+            name: userInRoom.name,
             answer: answer,
             createdAt: new Date(),
             status, // wrong | almost | correct
@@ -520,7 +520,7 @@ const GuessScreen = ({navigation, route}) => {
                 }
               : {flexDirection: 'row', justifyContent: 'center'},
           ]}>
-          {renderDrawArea(userInRoom, roomInfo, members)}
+          {renderDrawArea(userInRoom, roomInfo, members, roomId)}
         </View>
         {/* <View style={styles.tools}>
           <Ionicon name="settings-outline" size={28} color="#4cdafe" />
