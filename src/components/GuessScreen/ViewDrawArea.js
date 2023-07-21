@@ -7,6 +7,7 @@ const ViewDrawArea = ({user, room}) => {
       sdkParams={{
         appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
         region: 'sg',
+        screenType: 'Phone',
       }}
       roomParams={{
         uid: user.uid,
