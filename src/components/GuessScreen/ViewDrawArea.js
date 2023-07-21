@@ -22,7 +22,6 @@ const ViewDrawArea = ({user, room}) => {
         showRedoUndo: false,
         showPageIndicator: false,
       }}
-      joinRoomSuccessCallback={FastRoomObject => viewingBoard(FastRoomObject)}
     />
   );
 };
