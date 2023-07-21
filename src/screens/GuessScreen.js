@@ -459,7 +459,7 @@ const GuessScreen = ({navigation, route}) => {
           .collection('answers')
           .add({
             uid: user.uid,
-            name: user.displayName,
+            name: userInRoom.name,
             answer: answer,
             createdAt: new Date(),
             status, // wrong | almost | correct
