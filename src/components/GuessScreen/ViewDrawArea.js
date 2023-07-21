@@ -8,6 +8,8 @@ const ViewDrawArea = ({user, room}) => {
         appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
         region: 'sg',
         screenType: 'Phone',
+        log: false,
+        __nativeTags: 'dmm',
       }}
       roomParams={{
         uid: user.uid,

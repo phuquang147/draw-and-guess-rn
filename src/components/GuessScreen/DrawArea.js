@@ -11,6 +11,8 @@ const DrawArea = ({user, room}) => {
       sdkParams={{
         appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
         region: 'sg',
+        screenType: 'Phone',
+        __nativeTags: 'dmm',
       }}
       roomParams={{
         uid: user.uid,
