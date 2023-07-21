@@ -12,7 +12,10 @@ const DrawArea = ({user, room}) => {
         appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
         region: 'sg',
         screenType: 'Phone',
-        __nativeTags: 'dmm',
+        deviceType: 'Touch',
+        onWhiteSetupFailed: function (error) {
+          console.error(error);
+        },
       }}
       roomParams={{
         uid: user.uid,
