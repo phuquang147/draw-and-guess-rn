@@ -7,12 +7,6 @@ const ViewDrawArea = ({user, room}) => {
       sdkParams={{
         appIdentifier: 'lt740PLeEe2rGsedTfSCvw/1fgYEXBhcn-BTw',
         region: 'sg',
-        screenType: 'Phone',
-        deviceType: 'Touch',
-        log: false,
-        onWhiteSetupFailed: function (error) {
-          console.error(error);
-        },
       }}
       roomParams={{
         uid: user.uid,
@@ -20,7 +14,6 @@ const ViewDrawArea = ({user, room}) => {
         roomToken: room.roomToken,
         isWritable: false,
         disableCameraTransform: true,
-        enableRejectReadonlyError: true,
       }}
       style={styles.guessCanvas}
       displayConfig={{
