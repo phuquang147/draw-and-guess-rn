@@ -12,15 +12,15 @@ const ViewDrawArea = ({user, room}) => {
         uid: user.uid,
         uuid: room.uuid,
         roomToken: room.roomToken,
+        isWritable: false,
+        disableCameraTransform: true,
+        rejectWhenReadonlyErrorLevel: true,
       }}
       style={styles.guessCanvas}
       displayConfig={{
         showApplianceTools: false,
         showRedoUndo: false,
         showPageIndicator: false,
-        isWritable: false,
-        disableCameraTransform: true,
-        rejectWhenReadonlyErrorLevel: true,
       }}
       joinRoomSuccessCallback={FastRoomObject => viewingBoard(FastRoomObject)}
     />
