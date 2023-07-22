@@ -28,7 +28,7 @@ import {Picker} from '@react-native-picker/picker';
 import {UserContext} from '../../App';
 
 const NewTopicScreen = ({navigation, route}) => {
-  const {topic} = route.params;
+  const topic = route?.params?.topic;
   const {user, userRole} = useContext(UserContext);
   const [words, setWords] = useState([]);
   const [word, setWord] = useState('');
